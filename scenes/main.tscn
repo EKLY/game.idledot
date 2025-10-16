@@ -1,0 +1,166 @@
+[gd_scene load_steps=8 format=3 uid="uid://c2wh0yxc7k8ym"]
+
+[ext_resource type="Script" uid="uid://3v81f8804slb" path="res://scripts/camera_controller.gd" id="1_camera"]
+[ext_resource type="Script" uid="uid://c05663st613d4" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://bioirowxp1jc3" path="res://scripts/managers/hex_grid_manager.gd" id="2_hex_grid"]
+[ext_resource type="Script" uid="uid://5avl2opt6t3" path="res://scripts/managers/production_manager.gd" id="3_production"]
+[ext_resource type="Script" uid="uid://dl442h7c1wyp0" path="res://scripts/managers/transport_manager.gd" id="4_transport"]
+[ext_resource type="Script" uid="uid://mxldt7srqvxg" path="res://scripts/managers/economy_manager.gd" id="5_economy"]
+[ext_resource type="Script" uid="uid://numv8stjwocv" path="res://scripts/managers/save_load_manager.gd" id="6_save"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true
+script = ExtResource("1_camera")
+
+[node name="TileContainer" type="Node2D" parent="."]
+
+[node name="BuildingContainer" type="Node2D" parent="."]
+
+[node name="HexGridManager" type="Node" parent="."]
+script = ExtResource("2_hex_grid")
+
+[node name="ProductionManager" type="Node" parent="."]
+script = ExtResource("3_production")
+
+[node name="TransportManager" type="Node" parent="."]
+script = ExtResource("4_transport")
+
+[node name="EconomyManager" type="Node" parent="."]
+script = ExtResource("5_economy")
+
+[node name="SaveLoadManager" type="Node" parent="."]
+script = ExtResource("6_save")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TopBar" type="PanelContainer" parent="UI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/TopBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer"]
+layout_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Money: $1000"
+
+[node name="MenuButton" type="Button" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "≡"
+
+[node name="BottomSheet" type="PanelContainer" parent="UI"]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -300.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/BottomSheet"]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomSheet/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HandleBar" type="Panel" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(80, 4)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TileInfoLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Select a tile..."
+
+[node name="HSeparator" type="HSeparator" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="BuildingInfoLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "No building"
+
+[node name="StorageLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = ""
+
+[node name="HSeparator2" type="HSeparator" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="VBoxContainer" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BuildButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Build"
+
+[node name="SellButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Sell Resources"
+
+[node name="DestroyButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Destroy"
+
+[node name="CloseButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Close"
+
+[node name="QuickInfoPanel" type="PanelContainer" parent="UI"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/QuickInfoPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="QuickInfoLabel" type="Label" parent="UI/QuickInfoPanel/MarginContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Tap a tile"
+horizontal_alignment = 1
+vertical_alignment = 1
