@@ -76,8 +76,8 @@ func _create_tile(q: int, r: int):
 	# Initialize tile (this will setup hex shape and visuals)
 	tile.init(q, r, terrain)
 
-	# Set position
-	var pos = HexTile.hex_to_pixel(q, r, hex_size)
+	# Set position (with perspective scale)
+	var pos = HexTile.hex_to_pixel(q, r, hex_size, tile.perspective_scale)
 	tile.position = pos
 
 	# Store tile
@@ -108,7 +108,7 @@ func get_tile_at(q: int, r: int) -> HexTile:
 
 # Get tile at world position
 func get_tile_at_position(world_pos: Vector2) -> HexTile:
-	var hex_coords = HexTile.pixel_to_hex(world_pos, hex_size)
+	var hex_coords = HexTile.pixel_to_hex(world_pos, hex_size, 0.65)  # Use same perspective
 	return get_tile_at(hex_coords.x, hex_coords.y)
 
 # Get neighbors of a tile

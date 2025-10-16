@@ -30,6 +30,7 @@ var is_highlighted: bool = false
 
 # Visual properties
 var hex_size: float = 32.0
+var perspective_scale: float = 0.65  # Y-axis scale for pseudo-3D perspective (0.5-0.7)
 var color_normal: Color = Color.WHITE
 var color_hover: Color = Color(1.0, 1.0, 0.8)
 var color_selected: Color = Color(1.0, 0.8, 0.0)
@@ -96,14 +97,14 @@ func _setup_hex_shape():
 	if collision_shape:
 		collision_shape.polygon = points
 
-# Get hexagon corner points (flat-top orientation)
+# Get hexagon corner points (flat-top orientation with perspective)
 func _get_hex_corners() -> PackedVector2Array:
 	var corners = PackedVector2Array()
 	for i in range(6):
 		var angle_deg = 60.0 * i
 		var angle_rad = deg_to_rad(angle_deg)
 		var x = hex_size * cos(angle_rad)
-		var y = hex_size * sin(angle_rad)
+		var y = hex_size * sin(angle_rad) * perspective_scale  # Apply perspective scale
 		corners.append(Vector2(x, y))
 	return corners
 
@@ -145,6 +146,7 @@ func select():
 # Deselect tile
 func deselect():
 	is_selected = false
+	is_highlighted = false  # Clear highlight state when deselected
 	_update_visual()
 
 # Check if tile can have building placed
@@ -167,16 +169,18 @@ func remove_building():
 		building.queue_free()
 		building = null
 
-# Get world position from hex coordinates (flat-top)
-static func hex_to_pixel(q: int, r: int, size: float) -> Vector2:
+# Get world position from hex coordinates (flat-top with perspective)
+static func hex_to_pixel(q: int, r: int, size: float, perspective: float = 0.65) -> Vector2:
 	var x = size * (3.0/2.0 * q)
-	var y = size * (sqrt(3.0)/2.0 * q + sqrt(3.0) * r)
+	var y = size * (sqrt(3.0)/2.0 * q + sqrt(3.0) * r) * perspective  # Apply perspective
 	return Vector2(x, y)
 
-# Convert pixel position to hex coordinates
-static func pixel_to_hex(pos: Vector2, size: float) -> Vector2i:
+# Convert pixel position to hex coordinates (adjusted for perspective)
+static func pixel_to_hex(pos: Vector2, size: float, perspective: float = 0.65) -> Vector2i:
+	# Adjust y position for perspective
+	var adjusted_y = pos.y / perspective
 	var q = (2.0/3.0 * pos.x) / size
-	var r = (-1.0/3.0 * pos.x + sqrt(3.0)/3.0 * pos.y) / size
+	var r = (-1.0/3.0 * pos.x + sqrt(3.0)/3.0 * adjusted_y) / size
 	return _round_hex(q, r)
 
 # Round fractional hex coordinates to nearest hex

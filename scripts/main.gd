@@ -206,7 +206,8 @@ func _on_menu_button_pressed():
 
 func _create_building(tile: HexTile, building_id: String):
 	var building: BuildingBase = null
-	var building_data = Buildings.get_building(building_id)
+	# Duplicate to avoid read-only error
+	var building_data = Buildings.get_building(building_id).duplicate()
 	building_data["id"] = building_id
 
 	# Create appropriate building type

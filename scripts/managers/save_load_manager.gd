@@ -124,8 +124,8 @@ func _restore_building(tile: HexTile, building_data: Dictionary):
 		building = Road.new()
 
 	if building:
-		# Initialize and load data
-		var init_data = Buildings.get_building(building_id)
+		# Initialize and load data (duplicate to avoid read-only error)
+		var init_data = Buildings.get_building(building_id).duplicate()
 		init_data["id"] = building_id
 		building.init(init_data)
 		building.load_from_save(building_data)
