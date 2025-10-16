@@ -1,0 +1,26 @@
+# Sprite Files Directory
+
+Place your PNG sprite files here:
+
+## Terrain Sprites (256x128 px - Standard):
+- terrain_empty.png
+- terrain_mountain.png
+- terrain_farmland.png
+- terrain_water.png
+
+## Building Sprites (256x256 px - Square, Bottom-Aligned):
+- building_iron_mine.png
+- building_copper_mine.png
+- building_gold_mine.png
+- building_coal_mine.png
+- building_wheat_farm.png
+- building_vegetable_farm.png
+- building_cotton_farm.png
+- building_fishing_dock.png
+- building_water_pump.png
+- building_factory.png
+- building_road.png
+
+**Important**: Draw buildings aligned to the BOTTOM of the canvas!
+
+See SPRITES_GUIDE.md for detailed instructions.

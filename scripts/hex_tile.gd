@@ -30,7 +30,7 @@ var is_highlighted: bool = false
 
 # Visual properties
 var hex_size: float = 32.0
-var perspective_scale: float = 0.65  # Y-axis scale for pseudo-3D perspective (0.5-0.7)
+var perspective_scale: float = 0.5  # Y-axis scale for pseudo-3D perspective (0.5 = easy calculation)
 var color_normal: Color = Color.WHITE
 var color_hover: Color = Color(1.0, 1.0, 0.8)
 var color_selected: Color = Color(1.0, 0.8, 0.0)
@@ -50,6 +50,8 @@ var neighbors: Array = []
 var polygon: Polygon2D = null
 var collision_shape: CollisionPolygon2D = null
 var area_2d: Area2D = null
+var terrain_sprite: Sprite2D = null  # For terrain texture
+var building_sprite: Sprite2D = null  # For building sprite
 
 func _ready():
 	# Get node references if not already set
@@ -59,6 +61,10 @@ func _ready():
 		area_2d = get_node_or_null("Area2D")
 	if not collision_shape and area_2d:
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
+	if not terrain_sprite:
+		terrain_sprite = get_node_or_null("TerrainSprite")
+	if not building_sprite:
+		building_sprite = get_node_or_null("BuildingSprite")
 
 	_setup_hex_shape()
 	_update_visual()
@@ -82,9 +88,14 @@ func init(q_coord: int, r_coord: int, terrain: int):
 		area_2d = get_node_or_null("Area2D")
 	if not collision_shape and area_2d:
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
+	if not terrain_sprite:
+		terrain_sprite = get_node_or_null("TerrainSprite")
+	if not building_sprite:
+		building_sprite = get_node_or_null("BuildingSprite")
 
 	# Setup visuals
 	_setup_hex_shape()
+	_load_terrain_sprite()
 	_update_visual()
 
 # Setup hexagon shape
@@ -108,6 +119,41 @@ func _get_hex_corners() -> PackedVector2Array:
 		corners.append(Vector2(x, y))
 	return corners
 
+# Load terrain sprite based on terrain type
+func _load_terrain_sprite():
+	if not terrain_sprite:
+		return
+
+	# Define sprite paths for each terrain type
+	const TERRAIN_SPRITES = {
+		0: "res://assets/sprites/terrain_empty.png",
+		1: "res://assets/sprites/terrain_mountain.png",
+		2: "res://assets/sprites/terrain_farmland.png",
+		3: "res://assets/sprites/terrain_water.png"
+	}
+
+	var sprite_path = TERRAIN_SPRITES.get(terrain_type, "")
+	if sprite_path.is_empty() or not ResourceLoader.exists(sprite_path):
+		# If sprite doesn't exist, hide sprite and show colored polygon
+		terrain_sprite.visible = false
+		if polygon:
+			polygon.visible = true
+		return
+
+	# Load and display sprite
+	var texture = load(sprite_path)
+	if texture:
+		terrain_sprite.texture = texture
+		terrain_sprite.visible = true
+
+		# Scale sprite to fit hex size (256px standard -> hex_size * 2)
+		var sprite_scale = (hex_size * 2.0) / 256.0
+		terrain_sprite.scale = Vector2(sprite_scale, sprite_scale)
+
+		# Hide polygon when sprite is shown (or make it semi-transparent)
+		if polygon:
+			polygon.modulate.a = 0.3  # Make polygon semi-transparent under sprite
+
 # Update visual appearance
 func _update_visual():
 	if not polygon:
@@ -119,10 +165,17 @@ func _update_visual():
 	# Apply state modifications
 	if is_selected:
 		polygon.color = color_selected
+		# Highlight sprite too
+		if terrain_sprite and terrain_sprite.visible:
+			terrain_sprite.modulate = Color(1.0, 1.0, 0.7)  # Yellowish tint
 	elif is_highlighted:
 		polygon.color = color_hover
+		if terrain_sprite and terrain_sprite.visible:
+			terrain_sprite.modulate = Color(1.2, 1.2, 1.0)  # Bright tint
 	else:
 		polygon.color = base_color
+		if terrain_sprite and terrain_sprite.visible:
+			terrain_sprite.modulate = Color.WHITE  # Normal
 
 	# Add black border for visibility
 	polygon.texture = null
@@ -160,7 +213,39 @@ func place_building(new_building: Node):
 
 	building = new_building
 	add_child(building)
+	_load_building_sprite()
 	return true
+
+# Load building sprite
+func _load_building_sprite():
+	if not building or not building_sprite:
+		return
+
+	# Try to load building sprite based on building_id
+	var building_id = building.building_id if "building_id" in building else ""
+	if building_id.is_empty():
+		return
+
+	var sprite_path = "res://assets/sprites/building_%s.png" % building_id
+	if not ResourceLoader.exists(sprite_path):
+		# Hide building sprite if not found
+		building_sprite.visible = false
+		return
+
+	var texture = load(sprite_path)
+	if texture:
+		building_sprite.texture = texture
+		building_sprite.visible = true
+
+		# Scale sprite to fit hex size (256px standard -> hex_size * 2)
+		var sprite_scale = (hex_size * 2.0) / 256.0
+		building_sprite.scale = Vector2(sprite_scale, sprite_scale)
+
+		# Position building sprite with bottom-center alignment
+		# Building sprite (256x256) aligned to bottom of terrain sprite (256x128)
+		var terrain_half_height = 128.0 * sprite_scale * 0.5  # Half of terrain height
+		var building_half_height = 256.0 * sprite_scale * 0.5  # Half of building height
+		building_sprite.position = Vector2(0, -(building_half_height - terrain_half_height))
 
 # Remove building from tile
 func remove_building():
@@ -169,14 +254,18 @@ func remove_building():
 		building.queue_free()
 		building = null
 
+	# Hide building sprite
+	if building_sprite:
+		building_sprite.visible = false
+
 # Get world position from hex coordinates (flat-top with perspective)
-static func hex_to_pixel(q: int, r: int, size: float, perspective: float = 0.65) -> Vector2:
+static func hex_to_pixel(q: int, r: int, size: float, perspective: float = 0.5) -> Vector2:
 	var x = size * (3.0/2.0 * q)
 	var y = size * (sqrt(3.0)/2.0 * q + sqrt(3.0) * r) * perspective  # Apply perspective
 	return Vector2(x, y)
 
 # Convert pixel position to hex coordinates (adjusted for perspective)
-static func pixel_to_hex(pos: Vector2, size: float, perspective: float = 0.65) -> Vector2i:
+static func pixel_to_hex(pos: Vector2, size: float, perspective: float = 0.5) -> Vector2i:
 	# Adjust y position for perspective
 	var adjusted_y = pos.y / perspective
 	var q = (2.0/3.0 * pos.x) / size

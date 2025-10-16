@@ -8,8 +8,7 @@ signal tile_selected(tile: HexTile)
 signal tile_deselected(tile: HexTile)
 
 # Grid properties
-var grid_width: int = 10
-var grid_height: int = 14
+var grid_radius: int = 7  # Hexagonal grid radius (creates ~169 tiles)
 var hex_size: float = 60.0  # Larger for mobile touch
 
 # Grid data
@@ -31,19 +30,23 @@ func _setup_noise():
 	noise.frequency = 0.1
 	noise.fractal_octaves = 3
 
-# Create the hex grid
+# Create the hex grid (hexagonal shape)
 func create_grid(container: Node2D):
 	tile_container = container
 
-	print("Creating hex grid: %d x %d" % [grid_width, grid_height])
+	print("Creating hexagonal grid with radius: %d" % grid_radius)
 	var tile_count = 0
 
-	for q in range(-grid_width / 2, grid_width / 2):
-		for r in range(-grid_height / 2, grid_height / 2):
-			_create_tile(q, r)
-			tile_count += 1
+	# Create hexagonal grid instead of rectangular
+	for q in range(-grid_radius, grid_radius + 1):
+		for r in range(-grid_radius, grid_radius + 1):
+			# Check if tile is within hexagonal bounds
+			var s = -q - r  # Third cube coordinate
+			if abs(q) <= grid_radius and abs(r) <= grid_radius and abs(s) <= grid_radius:
+				_create_tile(q, r)
+				tile_count += 1
 
-	print("Created %d tiles" % tile_count)
+	print("Created %d tiles in hexagonal shape" % tile_count)
 
 # Create a single hex tile
 func _create_tile(q: int, r: int):
@@ -51,10 +54,25 @@ func _create_tile(q: int, r: int):
 	var tile = HexTile.new()
 	tile.hex_size = hex_size
 
-	# Create Polygon2D for visual
+	# Create Polygon2D for visual (base color)
 	var polygon = Polygon2D.new()
 	polygon.name = "Polygon2D"
 	tile.add_child(polygon)
+
+	# Create Sprite2D for terrain texture
+	var terrain_sprite = Sprite2D.new()
+	terrain_sprite.name = "TerrainSprite"
+	terrain_sprite.centered = true
+	terrain_sprite.z_index = 1  # Above polygon
+	tile.add_child(terrain_sprite)
+
+	# Create Sprite2D for building sprite
+	var building_sprite = Sprite2D.new()
+	building_sprite.name = "BuildingSprite"
+	building_sprite.centered = true
+	building_sprite.z_index = 2  # Above terrain
+	building_sprite.visible = false  # Hidden by default
+	tile.add_child(building_sprite)
 
 	# Create Area2D for mouse interaction
 	var area = Area2D.new()
@@ -108,7 +126,7 @@ func get_tile_at(q: int, r: int) -> HexTile:
 
 # Get tile at world position
 func get_tile_at_position(world_pos: Vector2) -> HexTile:
-	var hex_coords = HexTile.pixel_to_hex(world_pos, hex_size, 0.65)  # Use same perspective
+	var hex_coords = HexTile.pixel_to_hex(world_pos, hex_size, 0.5)  # Use same perspective
 	return get_tile_at(hex_coords.x, hex_coords.y)
 
 # Get neighbors of a tile
@@ -208,9 +226,9 @@ func get_all_tiles() -> Array:
 func _on_tile_clicked(tile: HexTile):
 	select_tile(tile)
 
-# Get grid dimensions
-func get_grid_size() -> Vector2i:
-	return Vector2i(grid_width, grid_height)
+# Get grid dimensions (radius for hexagonal grid)
+func get_grid_radius() -> int:
+	return grid_radius
 
 # Clear grid
 func clear_grid():
