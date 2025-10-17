@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cf3dhnc7jaels"
-path="res://.godot/imported/mountain.png-2643fc93c4ca2629155b0b18b6ac327a.ctex"
+uid="uid://d1dublk5futa7"
+path="res://.godot/imported/building_fishing_ice.png-81ed50ee0e6091eb9089b164d2aacad7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://~develop/object/mountain.png"
-dest_files=["res://.godot/imported/mountain.png-2643fc93c4ca2629155b0b18b6ac327a.ctex"]
+source_file="res://assets/sprites/building_fishing_ice.png"
+dest_files=["res://.godot/imported/building_fishing_ice.png-81ed50ee0e6091eb9089b164d2aacad7.ctex"]
 
 [params]
 

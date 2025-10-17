@@ -4,46 +4,48 @@ extends Node
 # Contains all building types, costs, requirements, and properties
 
 enum TerrainType {
-	EMPTY,    # Gray
-	FIELD,    # Green (เดิมคือ FARMLAND)
-	SAND,     # Yellow (เดิมคือ DESERT)
-	WATER,    # Blue
-	SNOW,     # White
-	VOLCANIC  # Red (พื้นที่ลาวา/ความร้อนจากใต้ดิน)
+	EMPTY,    # Gray , พื้นที่ว่างเปล่า
+	FIELD,    # Green , พื้นที่ทุ่งหญ้า
+	SAND,     # Yellow , พื้นที่ทะเลทราย
+	WATER,    # Blue , พื้นที่ทะเล
+	SNOW,     # White , พื้นที่หิมะ ความเย็น
+	VOLCANIC  # Red , พื้นที่ลาวา ความร้อน
 }
 
 # Objects that spawn on terrain (pre-placed for player to build on)
 const STRUCTURES: Dictionary[Variant, Variant] = {
 	"mountain": {
 		"name": "Mountain",
+		"description": "Rich mineral deposit",
 		"buildable": ["iron_mine", "copper_mine", "gold_mine", "coal_mine"],
 		"spawn_chance": {
-			TerrainType.FIELD: 0.15,  # 15% chance on FIELD
-			TerrainType.SAND: 0.25,   # 25% chance on SAND
-			TerrainType.SNOW: 0.10,   # 10% chance on SNOW
+			TerrainType.FIELD: 0.15,
+			TerrainType.SAND: 0.25,
+			TerrainType.SNOW: 0.10,
 		},
-		"description": "Rich mineral deposit"
 	},
-	"mountain_mine": {
-		"name": "Mountain with Mine",
-		"buildable": [],  # Cannot build on this (already has mine entrance)
-		"spawn_chance": {},  # Does not spawn naturally
-		"description": "Mountain with visible mine entrance"
+	"rock_ice": {
+		"name": "Ice Rock",
+		"description": "Stone deposits",
+		"buildable": ["quarry"],
+		"spawn_chance": {
+			TerrainType.SNOW: 0.15,
+		},
 	},
-	"tree": {
+	"forest_deep": {
 		"name": "Tree",
+		"description": "Harvestable trees",
 		"buildable": ["lumber_mill"],
 		"spawn_chance": {
-			TerrainType.FIELD: 0.20,  # 20% chance on FIELD
+			TerrainType.FIELD: 0.05,
 		},
-		"description": "Harvestable trees"
 	},
 	"rock": {
 		"name": "Rock Formation",
 		"buildable": ["quarry"],
 		"spawn_chance": {
-			TerrainType.SAND: 0.15,   # 15% chance on SAND
-			TerrainType.EMPTY: 0.05,  # 5% chance on EMPTY
+			TerrainType.SAND: 0.15,
+			TerrainType.EMPTY: 0.05,
 		},
 		"description": "Stone deposits"
 	},
