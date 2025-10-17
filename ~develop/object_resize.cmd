@@ -1,0 +1,1 @@
+D:\project\unno.automate\.venv\Scripts\python.exe D:\project\unno.automate\idledot_object.py
