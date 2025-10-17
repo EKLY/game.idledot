@@ -4,35 +4,105 @@ extends Node
 # Contains all building types, costs, requirements, and properties
 
 enum TerrainType {
-	EMPTY,
-	MOUNTAIN,
-	FARMLAND,
-	WATER
+	EMPTY,    # Gray
+	FIELD,    # Green (เดิมคือ FARMLAND)
+	SAND,     # Yellow (เดิมคือ DESERT)
+	WATER,    # Blue
+	SNOW,     # White
+	VOLCANIC  # Red (พื้นที่ลาวา/ความร้อนจากใต้ดิน)
+}
+
+# Objects that spawn on terrain (pre-placed for player to build on)
+const OBJECTS = {
+	"mountain": {
+		"name": "Mountain",
+		"sprite": "object_mountain.png",
+		"buildable": ["iron_mine", "copper_mine", "gold_mine", "coal_mine"],
+		"spawn_chance": {
+			TerrainType.FIELD: 0.15,  # 15% chance on FIELD
+			TerrainType.SAND: 0.25,   # 25% chance on SAND
+			TerrainType.SNOW: 0.10,   # 10% chance on SNOW
+		},
+		"description": "Rich mineral deposit"
+	},
+	"mountain_mine": {
+		"name": "Mountain with Mine",
+		"sprite": "object_mountain_mine.png",
+		"buildable": [],  # Cannot build on this (already has mine entrance)
+		"spawn_chance": {},  # Does not spawn naturally
+		"description": "Mountain with visible mine entrance"
+	},
+	"tree": {
+		"name": "Tree",
+		"sprite": "object_tree.png",
+		"buildable": ["lumber_mill"],
+		"spawn_chance": {
+			TerrainType.FIELD: 0.20,  # 20% chance on FIELD
+		},
+		"description": "Harvestable trees"
+	},
+	"rock": {
+		"name": "Rock Formation",
+		"sprite": "object_rock.png",
+		"buildable": ["quarry"],
+		"spawn_chance": {
+			TerrainType.SAND: 0.15,   # 15% chance on SAND
+			TerrainType.EMPTY: 0.05,  # 5% chance on EMPTY
+		},
+		"description": "Stone deposits"
+	},
+	"coral": {
+		"name": "Coral Reef",
+		"sprite": "object_coral.png",
+		"buildable": ["fishing_dock"],
+		"spawn_chance": {
+			TerrainType.WATER: 0.15,  # 15% only on WATER
+		},
+		"description": "Underwater coral formation"
+	},
+	"ice": {
+		"name": "Ice Formation",
+		"sprite": "object_ice.png",
+		"buildable": ["ice_harvester"],
+		"spawn_chance": {
+			TerrainType.SNOW: 0.20,  # 20% chance on SNOW
+		},
+		"description": "Frozen water deposits"
+	},
+	"lava_vent": {
+		"name": "Lava Vent",
+		"sprite": "object_lava_vent.png",
+		"buildable": ["geothermal_plant"],
+		"spawn_chance": {
+			TerrainType.VOLCANIC: 0.30,  # 30% chance on VOLCANIC
+		},
+		"description": "Underground heat source"
+	}
 }
 
 const BUILDINGS = {
 	"iron_mine": {
 		"name": "Iron Mine",
 		"cost": 100,
-		"terrain": [TerrainType.MOUNTAIN],
+		"terrain": [TerrainType.SAND],
 		"production": "iron_ore",
 		"production_time": 5.0,
 		"storage": 50,
-		"description": "Extracts iron ore from mountains"
+		"description": "Extracts iron ore from sand"
 	},
 	"copper_mine": {
 		"name": "Copper Mine",
 		"cost": 120,
-		"terrain": [TerrainType.MOUNTAIN],
+		"terrain": [TerrainType.SAND],
 		"production": "copper_ore",
 		"production_time": 5.0,
 		"storage": 50,
-		"description": "Extracts copper ore from mountains"
+		"description": "Extracts copper ore from sand"
 	},
 	"gold_mine": {
 		"name": "Gold Mine",
 		"cost": 200,
-		"terrain": [TerrainType.MOUNTAIN],
+		"terrain": [TerrainType.SAND],
 		"production": "gold_ore",
 		"production_time": 8.0,
 		"storage": 30,
@@ -41,7 +111,7 @@ const BUILDINGS = {
 	"coal_mine": {
 		"name": "Coal Mine",
 		"cost": 80,
-		"terrain": [TerrainType.MOUNTAIN],
+		"terrain": [TerrainType.SAND],
 		"production": "coal",
 		"production_time": 4.0,
 		"storage": 60,
@@ -50,7 +120,7 @@ const BUILDINGS = {
 	"wheat_farm": {
 		"name": "Wheat Farm",
 		"cost": 100,
-		"terrain": [TerrainType.FARMLAND],
+		"terrain": [TerrainType.FIELD],
 		"production": "wheat",
 		"production_time": 6.0,
 		"storage": 100,
@@ -59,7 +129,7 @@ const BUILDINGS = {
 	"vegetable_farm": {
 		"name": "Vegetable Farm",
 		"cost": 150,
-		"terrain": [TerrainType.FARMLAND],
+		"terrain": [TerrainType.FIELD],
 		"production": "vegetables",
 		"production_time": 7.0,
 		"storage": 100,
@@ -68,7 +138,7 @@ const BUILDINGS = {
 	"cotton_farm": {
 		"name": "Cotton Farm",
 		"cost": 120,
-		"terrain": [TerrainType.FARMLAND],
+		"terrain": [TerrainType.FIELD],
 		"production": "cotton",
 		"production_time": 8.0,
 		"storage": 100,
@@ -140,3 +210,47 @@ func get_buildings_for_terrain(terrain: int) -> Array:
 func get_building_name(building_id: String) -> String:
 	var building = get_building(building_id)
 	return building.get("name", "Unknown")
+
+# ==================== OBJECT FUNCTIONS ====================
+
+# Get object data by ID
+func get_object(object_id: String) -> Dictionary:
+	if OBJECTS.has(object_id):
+		return OBJECTS[object_id]
+	return {}
+
+# Get object name
+func get_object_name(object_id: String) -> String:
+	var obj = get_object(object_id)
+	return obj.get("name", "Unknown")
+
+# Get object sprite path
+func get_object_sprite(object_id: String) -> String:
+	var obj = get_object(object_id)
+	return obj.get("sprite", "")
+
+# Get buildings that can be built on this object
+func get_buildable_on_object(object_id: String) -> Array:
+	var obj = get_object(object_id)
+	return obj.get("buildable", [])
+
+# Check if building can be built on this object
+func can_build_on_object(object_id: String, building_id: String) -> bool:
+	var buildable = get_buildable_on_object(object_id)
+	return building_id in buildable
+
+# Get all objects that can spawn on terrain
+func get_objects_for_terrain(terrain: int) -> Array:
+	var result = []
+	for object_id in OBJECTS.keys():
+		var obj = OBJECTS[object_id]
+		var spawn_chance = obj.get("spawn_chance", {})
+		if terrain in spawn_chance:
+			result.append(object_id)
+	return result
+
+# Get spawn chance for object on terrain
+func get_object_spawn_chance(object_id: String, terrain: int) -> float:
+	var obj = get_object(object_id)
+	var spawn_chance = obj.get("spawn_chance", {})
+	return spawn_chance.get(terrain, 0.0)

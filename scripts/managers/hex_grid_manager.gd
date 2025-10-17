@@ -8,8 +8,17 @@ signal tile_selected(tile: HexTile)
 signal tile_deselected(tile: HexTile)
 
 # Grid properties
-var grid_radius: int = 7  # Hexagonal grid radius (creates ~169 tiles)
+var grid_width: int = 8   # Horizontal radius (q-axis)
+var grid_height: int = 24  # Vertical radius (r-axis) - 3x taller for portrait mode
 var hex_size: float = 60.0  # Larger for mobile touch
+
+# Terrain generation percentages (must sum to 100)
+@export_range(0, 100) var terrain_empty_percent: float = 20.0
+@export_range(0, 100) var terrain_field_percent: float = 25.0
+@export_range(0, 100) var terrain_sand_percent: float = 20.0
+@export_range(0, 100) var terrain_water_percent: float = 25.0
+@export_range(0, 100) var terrain_snow_percent: float = 8.0
+@export_range(0, 100) var terrain_volcanic_percent: float = 2.0
 
 # Grid data
 var tiles: Dictionary = {}  # {Vector2i(q, r): HexTile}
@@ -21,32 +30,80 @@ var tile_container: Node2D = null
 # Noise for terrain generation
 var noise: FastNoiseLite = FastNoiseLite.new()
 
+# Weighted random for terrain distribution
+var terrain_weights: Array[float] = []
+var terrain_types: Array[int] = []
+
+# Noise value cache for percentile-based distribution
+var noise_cache: Dictionary = {}  # {Vector2i(q,r): float}
+var sorted_noise_values: Array[float] = []
+
 func _ready():
 	_setup_noise()
+	_setup_terrain_weights()
 
 # Setup noise for terrain generation
 func _setup_noise():
 	noise.seed = randi()
-	noise.frequency = 0.1
-	noise.fractal_octaves = 3
+	noise.frequency = 0.04  # Lower frequency = larger clusters
+	noise.fractal_octaves = 3  # More octaves = more natural looking
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH  # Smoother transitions
 
-# Create the hex grid (hexagonal shape)
+# Setup weighted terrain distribution
+func _setup_terrain_weights():
+	terrain_types = [
+		Buildings.TerrainType.EMPTY,
+		Buildings.TerrainType.FIELD,
+		Buildings.TerrainType.SAND,
+		Buildings.TerrainType.WATER,
+		Buildings.TerrainType.SNOW,
+		Buildings.TerrainType.VOLCANIC
+	]
+
+	terrain_weights = [
+		terrain_empty_percent,
+		terrain_field_percent,
+		terrain_sand_percent,
+		terrain_water_percent,
+		terrain_snow_percent,
+		terrain_volcanic_percent
+	]
+
+# Create the hex grid (hexagonal ellipse shape - taller for portrait mode)
 func create_grid(container: Node2D):
 	tile_container = container
 
-	print("Creating hexagonal grid with radius: %d" % grid_radius)
-	var tile_count = 0
+	print("Creating hexagonal grid: %d (w) x %d (h)" % [grid_width, grid_height])
 
-	# Create hexagonal grid instead of rectangular
-	for q in range(-grid_radius, grid_radius + 1):
-		for r in range(-grid_radius, grid_radius + 1):
-			# Check if tile is within hexagonal bounds
+	# PASS 1: Generate and cache all noise values
+	noise_cache.clear()
+	sorted_noise_values.clear()
+
+	for q in range(-grid_width, grid_width + 1):
+		for r in range(-grid_height, grid_height + 1):
 			var s = -q - r  # Third cube coordinate
-			if abs(q) <= grid_radius and abs(r) <= grid_radius and abs(s) <= grid_radius:
+
+			if abs(q) <= grid_width and abs(r) <= grid_height and abs(s) <= max(grid_width, grid_height):
+				var noise_val = noise.get_noise_2d(float(q), float(r))
+				noise_cache[Vector2i(q, r)] = noise_val
+				sorted_noise_values.append(noise_val)
+
+	# Sort noise values for percentile calculation
+	sorted_noise_values.sort()
+
+	print("Generated %d noise values" % sorted_noise_values.size())
+
+	# PASS 2: Create tiles with terrain assigned by percentile
+	var tile_count = 0
+	for q in range(-grid_width, grid_width + 1):
+		for r in range(-grid_height, grid_height + 1):
+			var s = -q - r
+
+			if abs(q) <= grid_width and abs(r) <= grid_height and abs(s) <= max(grid_width, grid_height):
 				_create_tile(q, r)
 				tile_count += 1
 
-	print("Created %d tiles in hexagonal shape" % tile_count)
+	print("Created %d tiles in hexagonal ellipse shape" % tile_count)
 
 # Create a single hex tile
 func _create_tile(q: int, r: int):
@@ -66,11 +123,19 @@ func _create_tile(q: int, r: int):
 	terrain_sprite.z_index = 1  # Above polygon
 	tile.add_child(terrain_sprite)
 
+	# Create Sprite2D for object sprite (mountain, tree, etc.)
+	var object_sprite = Sprite2D.new()
+	object_sprite.name = "ObjectSprite"
+	object_sprite.centered = true
+	object_sprite.z_index = 2  # Above terrain, below buildings
+	object_sprite.visible = false  # Hidden by default
+	tile.add_child(object_sprite)
+
 	# Create Sprite2D for building sprite
 	var building_sprite = Sprite2D.new()
 	building_sprite.name = "BuildingSprite"
 	building_sprite.centered = true
-	building_sprite.z_index = 2  # Above terrain
+	building_sprite.z_index = 3  # Above objects
 	building_sprite.visible = false  # Hidden by default
 	tile.add_child(building_sprite)
 
@@ -87,12 +152,18 @@ func _create_tile(q: int, r: int):
 	# Generate terrain type
 	var terrain = _generate_terrain(q, r)
 
+	# Generate random sprite variation (0-3)
+	var variation = randi() % 4
+
+	# Generate random object based on terrain
+	var object_type = _generate_object(terrain)
+
 	# Add to container first (before init to ensure nodes are in tree)
 	if tile_container:
 		tile_container.add_child(tile)
 
 	# Initialize tile (this will setup hex shape and visuals)
-	tile.init(q, r, terrain)
+	tile.init(q, r, terrain, variation, object_type)
 
 	# Set position (with perspective scale)
 	var pos = HexTile.hex_to_pixel(q, r, hex_size, tile.perspective_scale)
@@ -106,19 +177,61 @@ func _create_tile(q: int, r: int):
 
 	return tile
 
-# Generate terrain type based on noise
-func _generate_terrain(q: int, r: int) -> int:
-	var noise_val = noise.get_noise_2d(float(q), float(r))
+# Generate object type based on terrain and spawn chances
+func _generate_object(terrain: int) -> String:
+	# Get all objects that can spawn on this terrain
+	var possible_objects = Buildings.get_objects_for_terrain(terrain)
 
-	# Distribute terrain types
-	if noise_val > 0.3:
-		return Buildings.TerrainType.MOUNTAIN
-	elif noise_val > 0.0:
-		return Buildings.TerrainType.FARMLAND
-	elif noise_val > -0.3:
+	if possible_objects.is_empty():
+		return ""  # No objects for this terrain
+
+	# Roll for each object with its spawn chance
+	for object_id in possible_objects:
+		var spawn_chance = Buildings.get_object_spawn_chance(object_id, terrain)
+		var roll = randf()  # Random float between 0.0 and 1.0
+
+		if roll < spawn_chance:
+			return object_id  # Spawn this object
+
+	return ""  # No object spawned
+
+# Generate terrain type using percentile-based distribution for accurate percentages
+func _generate_terrain(q: int, r: int) -> int:
+	# Get cached noise value
+	var coord = Vector2i(q, r)
+	var noise_val = noise_cache.get(coord, 0.0)
+
+	# Find percentile rank of this noise value
+	var rank = sorted_noise_values.bsearch(noise_val)
+	var total = sorted_noise_values.size()
+	var percentile = (float(rank) / float(total)) * 100.0
+
+	# Map percentile to terrain types based on exact percentages
+	# This guarantees accurate distribution while maintaining clustering
+	var cumulative = 0.0
+
+	cumulative += terrain_empty_percent
+	if percentile < cumulative:
 		return Buildings.TerrainType.EMPTY
-	else:
+
+	cumulative += terrain_field_percent
+	if percentile < cumulative:
+		return Buildings.TerrainType.FIELD
+
+	cumulative += terrain_sand_percent
+	if percentile < cumulative:
+		return Buildings.TerrainType.SAND
+
+	cumulative += terrain_water_percent
+	if percentile < cumulative:
 		return Buildings.TerrainType.WATER
+
+	cumulative += terrain_snow_percent
+	if percentile < cumulative:
+		return Buildings.TerrainType.SNOW
+
+	# Remaining is volcanic
+	return Buildings.TerrainType.VOLCANIC
 
 # Get tile at coordinates
 func get_tile_at(q: int, r: int) -> HexTile:
@@ -226,9 +339,16 @@ func get_all_tiles() -> Array:
 func _on_tile_clicked(tile: HexTile):
 	select_tile(tile)
 
-# Get grid dimensions (radius for hexagonal grid)
+# Get grid dimensions
+func get_grid_width() -> int:
+	return grid_width
+
+func get_grid_height() -> int:
+	return grid_height
+
+# Legacy function for compatibility
 func get_grid_radius() -> int:
-	return grid_radius
+	return max(grid_width, grid_height)
 
 # Clear grid
 func clear_grid():
