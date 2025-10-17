@@ -147,9 +147,9 @@ func _on_build_button_pressed():
 	var building_id = ""
 
 	match selected.terrain_type:
-		Buildings.TerrainType.MOUNTAIN:
+		Buildings.TerrainType.SAND:
 			building_id = "iron_mine"
-		Buildings.TerrainType.FARMLAND:
+		Buildings.TerrainType.FIELD:
 			building_id = "wheat_farm"
 		Buildings.TerrainType.EMPTY:
 			building_id = "road"

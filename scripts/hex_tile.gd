@@ -24,6 +24,8 @@ var cube_z: int:
 
 # Tile properties
 var terrain_type: int = Buildings.TerrainType.EMPTY
+var terrain_variation: int = 0  # 0-3 for sprite variations
+var object_type: String = ""  # Object ID (e.g., "mountain", "tree")
 var building: Node = null
 var is_selected: bool = false
 var is_highlighted: bool = false
@@ -37,10 +39,12 @@ var color_selected: Color = Color(1.0, 0.8, 0.0)
 
 # Terrain colors
 const TERRAIN_COLORS = {
-	0: Color(0.8, 0.8, 0.8),  # EMPTY - Gray
-	1: Color(0.5, 0.4, 0.3),  # MOUNTAIN - Brown
-	2: Color(0.4, 0.7, 0.3),  # FARMLAND - Green
-	3: Color(0.3, 0.5, 0.9)   # WATER - Blue
+	0: Color(0.8, 0.8, 0.8),   # EMPTY - Gray
+	1: Color(0.4, 0.7, 0.3),   # FIELD - Green
+	2: Color(0.9, 0.8, 0.5),   # SAND - Yellow
+	3: Color(0.3, 0.5, 0.9),   # WATER - Blue
+	4: Color(0.95, 0.95, 1.0), # SNOW - White
+	5: Color(0.83, 0.18, 0.18) # VOLCANIC - Red (ลาวา/ความร้อนใต้ดิน)
 }
 
 # Neighbors (cached)
@@ -51,6 +55,7 @@ var polygon: Polygon2D = null
 var collision_shape: CollisionPolygon2D = null
 var area_2d: Area2D = null
 var terrain_sprite: Sprite2D = null  # For terrain texture
+var object_sprite: Sprite2D = null   # For object sprite (mountain, tree, etc.)
 var building_sprite: Sprite2D = null  # For building sprite
 
 func _ready():
@@ -63,6 +68,8 @@ func _ready():
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
 	if not terrain_sprite:
 		terrain_sprite = get_node_or_null("TerrainSprite")
+	if not object_sprite:
+		object_sprite = get_node_or_null("ObjectSprite")
 	if not building_sprite:
 		building_sprite = get_node_or_null("BuildingSprite")
 
@@ -76,10 +83,12 @@ func _ready():
 		area_2d.input_event.connect(_on_input_event)
 
 # Initialize tile with coordinates and terrain
-func init(q_coord: int, r_coord: int, terrain: int):
+func init(q_coord: int, r_coord: int, terrain: int, variation: int = 0, obj_type: String = ""):
 	q = q_coord
 	r = r_coord
 	terrain_type = terrain
+	terrain_variation = variation  # Store sprite variation (0-3)
+	object_type = obj_type  # Store object type (e.g., "mountain", "tree")
 
 	# Get node references if not already set
 	if not polygon:
@@ -90,12 +99,15 @@ func init(q_coord: int, r_coord: int, terrain: int):
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
 	if not terrain_sprite:
 		terrain_sprite = get_node_or_null("TerrainSprite")
+	if not object_sprite:
+		object_sprite = get_node_or_null("ObjectSprite")
 	if not building_sprite:
 		building_sprite = get_node_or_null("BuildingSprite")
 
 	# Setup visuals
 	_setup_hex_shape()
 	_load_terrain_sprite()
+	_load_object_sprite()
 	_update_visual()
 
 # Setup hexagon shape
@@ -124,16 +136,32 @@ func _load_terrain_sprite():
 	if not terrain_sprite:
 		return
 
-	# Define sprite paths for each terrain type
-	const TERRAIN_SPRITES = {
-		0: "res://assets/sprites/terrain_empty.png",
-		1: "res://assets/sprites/terrain_mountain.png",
-		2: "res://assets/sprites/terrain_farmland.png",
-		3: "res://assets/sprites/terrain_water.png"
+	# Define terrain type names
+	const TERRAIN_NAMES = {
+		0: "empty",
+		1: "field",
+		2: "sand",
+		3: "water",
+		4: "snow",
+		5: "volcanic"
 	}
 
-	var sprite_path = TERRAIN_SPRITES.get(terrain_type, "")
-	if sprite_path.is_empty() or not ResourceLoader.exists(sprite_path):
+	# Build sprite path with variation: terrain_farmland-0.png
+	var terrain_name = TERRAIN_NAMES.get(terrain_type, "")
+	if terrain_name.is_empty():
+		# Unknown terrain type
+		terrain_sprite.visible = false
+		if polygon:
+			polygon.visible = true
+		return
+
+	var sprite_path = "res://assets/sprites/terrain_%s-%d.png" % [terrain_name, terrain_variation]
+
+	# If variation sprite doesn't exist, try fallback without variation
+	if not ResourceLoader.exists(sprite_path):
+		sprite_path = "res://assets/sprites/terrain_%s.png" % terrain_name
+
+	if not ResourceLoader.exists(sprite_path):
 		# If sprite doesn't exist, hide sprite and show colored polygon
 		terrain_sprite.visible = false
 		if polygon:
@@ -146,13 +174,67 @@ func _load_terrain_sprite():
 		terrain_sprite.texture = texture
 		terrain_sprite.visible = true
 
-		# Scale sprite to fit hex size (256px standard -> hex_size * 2)
-		var sprite_scale = (hex_size * 2.0) / 256.0
-		terrain_sprite.scale = Vector2(sprite_scale, sprite_scale)
+		# Scale sprite to fit hex size
+		# Terrain sprite is 256x128 px (width x height)
+		# Flat-top hexagon dimensions:
+		# - Width = hex_size * 2
+		# - Height = sqrt(3) * hex_size * perspective_scale
+		var hex_width = hex_size * 2.0
+		var hex_height = sqrt(3.0) * hex_size * perspective_scale
+
+		var sprite_scale_x = hex_width / 256.0
+		var sprite_scale_y = hex_height / 128.0
+		terrain_sprite.scale = Vector2(sprite_scale_x, sprite_scale_y)
 
 		# Hide polygon when sprite is shown (or make it semi-transparent)
 		if polygon:
 			polygon.modulate.a = 0.3  # Make polygon semi-transparent under sprite
+
+# Load object sprite based on object type
+func _load_object_sprite():
+	if not object_sprite:
+		return
+
+	# If no object type, hide sprite
+	if object_type.is_empty():
+		object_sprite.visible = false
+		return
+
+	# Get object sprite filename from Buildings autoload
+	var sprite_filename = Buildings.get_object_sprite(object_type)
+	if sprite_filename.is_empty():
+		object_sprite.visible = false
+		return
+
+	# Build full path
+	var sprite_path = "res://assets/sprites/" + sprite_filename
+
+	if not ResourceLoader.exists(sprite_path):
+		# Hide object sprite if not found
+		object_sprite.visible = false
+		return
+
+	# Load and display sprite
+	var texture = load(sprite_path)
+	if texture:
+		object_sprite.texture = texture
+		object_sprite.visible = true
+
+		# Scale sprite to fit hex size
+		# Object sprite is 256x256 px (standard size)
+		# We want it to fit within the hex tile
+		var hex_width = hex_size * 2.0
+		var sprite_scale = hex_width / 256.0
+		object_sprite.scale = Vector2(sprite_scale, sprite_scale)
+
+		# Position object sprite with bottom-center alignment
+		# Align bottom of object (256px) to bottom of terrain (128px height)
+		var terrain_half_height = 128.0 * sprite_scale * 0.5  # Half of terrain height
+		var object_half_height = 256.0 * sprite_scale * 0.5   # Half of object height
+		object_sprite.position = Vector2(0, -(object_half_height - terrain_half_height))
+
+		# Set z-index to be above terrain but below buildings
+		object_sprite.z_index = 2
 
 # Update visual appearance
 func _update_visual():
@@ -205,6 +287,27 @@ func deselect():
 # Check if tile can have building placed
 func can_build() -> bool:
 	return building == null
+
+# Set object on tile
+func set_object(obj_type: String):
+	object_type = obj_type
+	_load_object_sprite()
+
+# Remove object from tile
+func remove_object():
+	object_type = ""
+	if object_sprite:
+		object_sprite.visible = false
+
+# Check if tile has object
+func has_object() -> bool:
+	return not object_type.is_empty()
+
+# Get buildable buildings on this object
+func get_buildable_buildings() -> Array:
+	if object_type.is_empty():
+		return []
+	return Buildings.get_buildable_on_object(object_type)
 
 # Place building on tile
 func place_building(new_building: Node):
