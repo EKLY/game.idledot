@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnrrshksll2sq"
-path="res://.godot/imported/terrain_farmland.png-69c141039b73e27b068670ec52c09634.ctex"
+uid="uid://butqcr5p718sd"
+path="res://.godot/imported/object_mountain.png-641758968a73f08e6c569a9ff3a284a5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/terrain_farmland.png"
-dest_files=["res://.godot/imported/terrain_farmland.png-69c141039b73e27b068670ec52c09634.ctex"]
+source_file="res://assets/sprites/object_mountain.png"
+dest_files=["res://.godot/imported/object_mountain.png-641758968a73f08e6c569a9ff3a284a5.ctex"]
 
 [params]
 

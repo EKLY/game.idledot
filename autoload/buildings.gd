@@ -13,9 +13,10 @@ enum TerrainType {
 }
 
 # Objects that spawn on terrain (pre-placed for player to build on)
-const STRUCTURES: Dictionary[Variant, Variant] = {
+const OBJECTS = {
 	"mountain": {
 		"name": "Mountain",
+		"sprite": "object_mountain.png",
 		"buildable": ["iron_mine", "copper_mine", "gold_mine", "coal_mine"],
 		"spawn_chance": {
 			TerrainType.FIELD: 0.15,  # 15% chance on FIELD
@@ -26,12 +27,14 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	},
 	"mountain_mine": {
 		"name": "Mountain with Mine",
+		"sprite": "object_mountain_mine.png",
 		"buildable": [],  # Cannot build on this (already has mine entrance)
 		"spawn_chance": {},  # Does not spawn naturally
 		"description": "Mountain with visible mine entrance"
 	},
 	"tree": {
 		"name": "Tree",
+		"sprite": "object_tree.png",
 		"buildable": ["lumber_mill"],
 		"spawn_chance": {
 			TerrainType.FIELD: 0.20,  # 20% chance on FIELD
@@ -40,6 +43,7 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	},
 	"rock": {
 		"name": "Rock Formation",
+		"sprite": "object_rock.png",
 		"buildable": ["quarry"],
 		"spawn_chance": {
 			TerrainType.SAND: 0.15,   # 15% chance on SAND
@@ -49,6 +53,7 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	},
 	"coral": {
 		"name": "Coral Reef",
+		"sprite": "object_coral.png",
 		"buildable": ["fishing_dock"],
 		"spawn_chance": {
 			TerrainType.WATER: 0.15,  # 15% only on WATER
@@ -57,6 +62,7 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	},
 	"ice": {
 		"name": "Ice Formation",
+		"sprite": "object_ice.png",
 		"buildable": ["ice_harvester"],
 		"spawn_chance": {
 			TerrainType.SNOW: 0.20,  # 20% chance on SNOW
@@ -65,6 +71,7 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	},
 	"lava_vent": {
 		"name": "Lava Vent",
+		"sprite": "object_lava_vent.png",
 		"buildable": ["geothermal_plant"],
 		"spawn_chance": {
 			TerrainType.VOLCANIC: 0.30,  # 30% chance on VOLCANIC
@@ -73,7 +80,7 @@ const STRUCTURES: Dictionary[Variant, Variant] = {
 	}
 }
 
-const BUILDINGS: Dictionary[Variant, Variant] = {
+const BUILDINGS = {
 	"iron_mine": {
 		"name": "Iron Mine",
 		"cost": 100,
@@ -208,8 +215,8 @@ func get_building_name(building_id: String) -> String:
 
 # Get object data by ID
 func get_object(object_id: String) -> Dictionary:
-	if STRUCTURES.has(object_id):
-		return STRUCTURES[object_id]
+	if OBJECTS.has(object_id):
+		return OBJECTS[object_id]
 	return {}
 
 # Get object name
@@ -235,8 +242,8 @@ func can_build_on_object(object_id: String, building_id: String) -> bool:
 # Get all objects that can spawn on terrain
 func get_objects_for_terrain(terrain: int) -> Array:
 	var result = []
-	for object_id in STRUCTURES.keys():
-		var obj = STRUCTURES[object_id]
+	for object_id in OBJECTS.keys():
+		var obj = OBJECTS[object_id]
 		var spawn_chance = obj.get("spawn_chance", {})
 		if terrain in spawn_chance:
 			result.append(object_id)
