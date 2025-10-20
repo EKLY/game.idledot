@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://c2wh0yxc7k8ym"]
+[gd_scene load_steps=11 format=3 uid="uid://c2wh0yxc7k8ym"]
 
 [ext_resource type="Script" uid="uid://3v81f8804slb" path="res://scripts/camera_controller.gd" id="1_camera"]
 [ext_resource type="Script" uid="uid://c05663st613d4" path="res://scripts/main.gd" id="1_main"]
@@ -7,6 +7,9 @@
 [ext_resource type="Script" uid="uid://dl442h7c1wyp0" path="res://scripts/managers/transport_manager.gd" id="4_transport"]
 [ext_resource type="Script" uid="uid://mxldt7srqvxg" path="res://scripts/managers/economy_manager.gd" id="5_economy"]
 [ext_resource type="Script" uid="uid://numv8stjwocv" path="res://scripts/managers/save_load_manager.gd" id="6_save"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_coin.png" id="7_coin_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_cash.png" id="8_cash_icon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_cog.png" id="9_cog_icon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -51,16 +54,52 @@ theme_override_constants/margin_bottom = 10
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 20
 
-[node name="MoneyLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+[node name="CoinsContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CoinIcon" type="TextureRect" parent="UI/TopBar/MarginContainer/HBoxContainer/CoinsContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("7_coin_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CoinsLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer/CoinsContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "1000"
+vertical_alignment = 1
+
+[node name="CashContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CashIcon" type="TextureRect" parent="UI/TopBar/MarginContainer/HBoxContainer/CashContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("8_cash_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CashLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer/CashContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "0"
+vertical_alignment = 1
+
+[node name="Spacer" type="Control" parent="UI/TopBar/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-text = "Money: $1000"
 
-[node name="MenuButton" type="Button" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+[node name="SettingsButton" type="TextureButton" parent="UI/TopBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-text = "≡"
+texture_normal = ExtResource("9_cog_icon")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="BottomSheet" type="PanelContainer" parent="UI"]
 visible = false

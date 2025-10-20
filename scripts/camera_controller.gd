@@ -133,12 +133,14 @@ func _update_pinch_zoom():
 		var new_zoom_value = pinch_start_zoom.x * zoom_factor
 		new_zoom_value = clamp(new_zoom_value, zoom_min, zoom_max)
 		zoom = Vector2(new_zoom_value, new_zoom_value)
+		_apply_bounds()  # Apply bounds after zoom change
 
 # Zoom camera by delta
 func _zoom_camera(delta: float):
 	var new_zoom = zoom.x + delta
 	new_zoom = clamp(new_zoom, zoom_min, zoom_max)
 	zoom = Vector2(new_zoom, new_zoom)
+	_apply_bounds()  # Apply bounds after zoom change
 
 # Start panning
 func _start_pan(touch_pos: Vector2):
@@ -156,11 +158,32 @@ func _update_pan(touch_pos: Vector2):
 func _end_pan():
 	is_panning = false
 
-# Apply camera bounds
+# Apply camera bounds (accounting for viewport and zoom)
 func _apply_bounds():
 	if use_bounds:
-		position.x = clamp(position.x, bounds_min.x, bounds_max.x)
-		position.y = clamp(position.y, bounds_min.y, bounds_max.y)
+		# Get viewport size
+		var viewport_size = get_viewport_rect().size
+
+		# Calculate visible area at current zoom
+		var visible_width = viewport_size.x / zoom.x / 2.0
+		var visible_height = viewport_size.y / zoom.y / 2.0
+
+		# Adjust bounds based on visible area
+		var adjusted_min_x = bounds_min.x + visible_width
+		var adjusted_max_x = bounds_max.x - visible_width
+		var adjusted_min_y = bounds_min.y + visible_height
+		var adjusted_max_y = bounds_max.y - visible_height
+
+		# Ensure min < max (in case viewport is larger than bounds)
+		if adjusted_min_x > adjusted_max_x:
+			adjusted_min_x = (bounds_min.x + bounds_max.x) / 2.0
+			adjusted_max_x = adjusted_min_x
+		if adjusted_min_y > adjusted_max_y:
+			adjusted_min_y = (bounds_min.y + bounds_max.y) / 2.0
+			adjusted_max_y = adjusted_min_y
+
+		position.x = clamp(position.x, adjusted_min_x, adjusted_max_x)
+		position.y = clamp(position.y, adjusted_min_y, adjusted_max_y)
 
 # Set camera bounds
 func set_bounds(min_pos: Vector2, max_pos: Vector2):

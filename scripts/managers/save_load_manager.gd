@@ -20,6 +20,7 @@ func save_game(hex_grid: HexGridManager, economy: EconomyManager, production: Pr
 		"version": "1.0",
 		"timestamp": Time.get_unix_time_from_system(),
 		"money": economy.money,
+		"cash": economy.cash,
 		"total_earnings": economy.total_earnings,
 		"tiles": [],
 		"buildings": []
@@ -88,8 +89,10 @@ func load_game(hex_grid: HexGridManager, economy: EconomyManager) -> bool:
 
 	# Restore economy
 	economy.money = save_data.get("money", 1000)
+	economy.cash = save_data.get("cash", 0)
 	economy.total_earnings = save_data.get("total_earnings", 0)
 	economy.money_changed.emit(economy.money)
+	economy.cash_changed.emit(economy.cash)
 
 	# Restore buildings
 	for tile_data in save_data.get("tiles", []):

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://butqcr5p718sd"
-path="res://.godot/imported/object_mountain.png-641758968a73f08e6c569a9ff3a284a5.ctex"
+uid="uid://ctrng3ijmu26d"
+path="res://.godot/imported/icon_coins.png-f23f6abf5d9d2de6c21a5339efe8932e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/object_mountain.png"
-dest_files=["res://.godot/imported/object_mountain.png-641758968a73f08e6c569a9ff3a284a5.ctex"]
+source_file="res://assets/sprites/icon_coins.png"
+dest_files=["res://.godot/imported/icon_coins.png-f23f6abf5d9d2de6c21a5339efe8932e.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

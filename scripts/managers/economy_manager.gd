@@ -5,9 +5,11 @@ class_name EconomyManager
 # Handles money, selling products, and market prices
 
 signal money_changed(new_amount: int)
+signal cash_changed(new_amount: int)
 signal product_sold(resource_id: String, amount: int, value: int)
 
-var money: int = 1000  # Starting money
+var money: int = 1000  # Starting money (coins - earned from selling)
+var cash: int = 0  # Premium currency (bought with real money or earned as reward)
 var total_earnings: int = 0
 
 # Sales tracking for offline earnings
@@ -35,6 +37,24 @@ func spend_money(amount: int) -> bool:
 # Check if player can afford something
 func can_afford(cost: int) -> bool:
 	return money >= cost
+
+# Add cash (premium currency)
+func add_cash(amount: int):
+	cash += amount
+	cash_changed.emit(cash)
+
+# Spend cash (premium currency)
+func spend_cash(amount: int) -> bool:
+	if cash < amount:
+		return false
+
+	cash -= amount
+	cash_changed.emit(cash)
+	return true
+
+# Check if player has enough cash
+func can_afford_cash(cost: int) -> bool:
+	return cash >= cost
 
 # Sell a product
 func sell_product(resource_id: String, amount: int) -> bool:
@@ -114,6 +134,7 @@ func award_offline_earnings(amount: int):
 func get_economy_info() -> Dictionary:
 	return {
 		"money": money,
+		"cash": cash,
 		"total_earnings": total_earnings,
 		"avg_sales_per_minute": get_average_sales_per_minute()
 	}
@@ -121,6 +142,8 @@ func get_economy_info() -> Dictionary:
 # Reset economy (for new game)
 func reset_economy():
 	money = 1000
+	cash = 0
 	total_earnings = 0
 	sales_history.clear()
 	money_changed.emit(money)
+	cash_changed.emit(cash)

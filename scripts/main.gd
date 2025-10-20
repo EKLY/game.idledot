@@ -15,8 +15,9 @@ extends Node2D
 @onready var save_load_manager: SaveLoadManager = $SaveLoadManager
 
 # UI - Top Bar
-@onready var money_label: Label = $UI/TopBar/MarginContainer/HBoxContainer/MoneyLabel
-@onready var menu_button: Button = $UI/TopBar/MarginContainer/HBoxContainer/MenuButton
+@onready var coins_label: Label = $UI/TopBar/MarginContainer/HBoxContainer/CoinsContainer/CoinsLabel
+@onready var cash_label: Label = $UI/TopBar/MarginContainer/HBoxContainer/CashContainer/CashLabel
+@onready var settings_button: TextureButton = $UI/TopBar/MarginContainer/HBoxContainer/SettingsButton
 
 # UI - Bottom Sheet
 @onready var bottom_sheet: PanelContainer = $UI/BottomSheet
@@ -47,6 +48,9 @@ func _ready():
 
 	# Create grid
 	hex_grid_manager.create_grid(tile_container)
+
+	# Setup camera bounds
+	_setup_camera_bounds()
 
 	# Connect signals
 	_connect_signals()
@@ -85,13 +89,14 @@ func _connect_signals():
 
 	# Economy signals
 	economy_manager.money_changed.connect(_on_money_changed)
+	economy_manager.cash_changed.connect(_on_cash_changed)
 
 	# UI signals
 	build_button.pressed.connect(_on_build_button_pressed)
 	sell_button.pressed.connect(_on_sell_button_pressed)
 	destroy_button.pressed.connect(_on_destroy_button_pressed)
 	close_button.pressed.connect(_on_close_button_pressed)
-	menu_button.pressed.connect(_on_menu_button_pressed)
+	settings_button.pressed.connect(_on_settings_button_pressed)
 
 	# Save/Load signals
 	save_load_manager.offline_earnings_calculated.connect(_on_offline_earnings_calculated)
@@ -200,9 +205,9 @@ func _on_destroy_button_pressed():
 func _on_close_button_pressed():
 	hex_grid_manager.deselect_current_tile()
 
-func _on_menu_button_pressed():
-	# TODO: Show menu
-	_show_quick_info("Menu coming soon", 2.0)
+func _on_settings_button_pressed():
+	# TODO: Show settings menu
+	_show_quick_info("Settings coming soon", 2.0)
 
 func _create_building(tile: HexTile, building_id: String):
 	var building: BuildingBase = null
@@ -231,7 +236,25 @@ func _create_building(tile: HexTile, building_id: String):
 		production_manager.register_building(building)
 
 func _on_money_changed(new_amount: int):
-	money_label.text = "$%d" % new_amount
+	coins_label.text = _format_currency(new_amount)
+
+func _on_cash_changed(new_amount: int):
+	cash_label.text = _format_currency(new_amount)
+
+# Format currency with thousands separator
+func _format_currency(amount: int) -> String:
+	var text = str(amount)
+	var result = ""
+	var count = 0
+
+	# Add commas for thousands
+	for i in range(text.length() - 1, -1, -1):
+		if count > 0 and count % 3 == 0:
+			result = "," + result
+		result = text[i] + result
+		count += 1
+
+	return result
 
 func _on_offline_earnings_calculated(amount: int, minutes: float):
 	var hours = int(minutes / 60)
@@ -240,6 +263,7 @@ func _on_offline_earnings_calculated(amount: int, minutes: float):
 
 func _update_ui():
 	_on_money_changed(economy_manager.money)
+	_on_cash_changed(economy_manager.cash)
 
 # Show bottom sheet with animation
 func _show_bottom_sheet():
@@ -267,6 +291,41 @@ func _show_quick_info(message: String, duration: float = 2.0):
 	# Auto-hide after duration
 	await get_tree().create_timer(duration).timeout
 	quick_info_panel.visible = false
+
+# Setup camera bounds based on grid size
+func _setup_camera_bounds():
+	var grid_w = hex_grid_manager.grid_width
+	var grid_h = hex_grid_manager.grid_height
+	var hex_size = hex_grid_manager.hex_size
+	var perspective = 0.5  # Same as tile perspective_scale
+
+	# Calculate corner positions of the grid
+	# Top-left corner: (-grid_w, -grid_h)
+	# Top-right corner: (+grid_w, -grid_h)
+	# Bottom-left corner: (-grid_w, +grid_h)
+	# Bottom-right corner: (+grid_w, +grid_h)
+
+	var top_left = HexTile.hex_to_pixel(-grid_w, -grid_h, hex_size, perspective)
+	var top_right = HexTile.hex_to_pixel(grid_w, -grid_h, hex_size, perspective)
+	var bottom_left = HexTile.hex_to_pixel(-grid_w, grid_h, hex_size, perspective)
+	var bottom_right = HexTile.hex_to_pixel(grid_w, grid_h, hex_size, perspective)
+
+	# Find actual min/max bounds
+	var min_x = min(min(top_left.x, top_right.x), min(bottom_left.x, bottom_right.x))
+	var max_x = max(max(top_left.x, top_right.x), max(bottom_left.x, bottom_right.x))
+	var min_y = min(min(top_left.y, top_right.y), min(bottom_left.y, bottom_right.y))
+	var max_y = max(max(top_left.y, top_right.y), max(bottom_left.y, bottom_right.y))
+
+	# Add margin of 1.5 tiles (compromise between 1-2 tiles as requested)
+	var margin = hex_size * 1.5
+
+	var bounds_min = Vector2(min_x - margin, min_y - margin)
+	var bounds_max = Vector2(max_x + margin, max_y + margin)
+
+	# Set camera bounds
+	camera.set_bounds(bounds_min, bounds_max)
+
+	print("Camera bounds set: min=%s, max=%s" % [bounds_min, bounds_max])
 
 # Save game on exit
 func _notification(what):
