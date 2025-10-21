@@ -1,0 +1,158 @@
+[gd_scene load_steps=5 format=3 uid="uid://bottom_sheet_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/bottom_sheet.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_sale.png" id="icon_sale"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_bomb.png" id="icon_bomb"]
+[ext_resource type="Texture2D" path="res://assets/sprites/icon_close.png" id="icon_close"]
+
+[node name="BottomSheet" type="PanelContainer"]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 8
+script = ExtResource("1_script")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HandleBar" type="Panel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(80, 4)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="HeaderSection" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TileNameLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Select a tile..."
+
+[node name="LocationLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "(0, 0)"
+horizontal_alignment = 2
+
+[node name="HSeparator1" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DetailLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Empty tile"
+autowrap_mode = 3
+
+[node name="BuildUpgradeSection" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SectionLabel" type="Label" parent="MarginContainer/VBoxContainer/BuildUpgradeSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Build / Upgrade"
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/BuildUpgradeSection"]
+layout_mode = 2
+
+[node name="BuildScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/BuildUpgradeSection"]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 2
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="BuildContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/BuildUpgradeSection/BuildScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="ProductionSection" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/ProductionSection"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ProductionLabel" type="Label" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Producing: Iron Ore"
+
+[node name="ProgressContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer/VBoxContainer/ProgressContainer"]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 100.0
+show_percentage = false
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer/VBoxContainer/ProgressContainer"]
+custom_minimum_size = Vector2(45, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "30s"
+horizontal_alignment = 2
+
+[node name="StorageLabel" type="Label" parent="MarginContainer/VBoxContainer/ProductionSection/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Storage: 5 / 1000"
+
+[node name="HSeparator2" type="HSeparator" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ToolsSection" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="SellButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ToolsSection"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "Sell Resources"
+texture_normal = ExtResource("icon_sale")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="DestroyButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ToolsSection"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "Destroy Building"
+texture_normal = ExtResource("icon_bomb")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer/ToolsSection"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="TextureButton" parent="MarginContainer/VBoxContainer/ToolsSection"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "Close"
+texture_normal = ExtResource("icon_close")
+ignore_texture_size = true
+stretch_mode = 5

@@ -169,5 +169,6 @@ func get_info() -> Dictionary:
 		"storage": storage,
 		"storage_capacity": storage_capacity,
 		"is_producing": is_producing,
+		"production_time": production_time,
 		"production_progress": (production_timer / production_time * 100.0) if production_time > 0 else 0.0
 	}

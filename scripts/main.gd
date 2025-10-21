@@ -20,14 +20,7 @@ extends Node2D
 @onready var settings_button: TextureButton = $UI/TopBar/MarginContainer/HBoxContainer/SettingsButton
 
 # UI - Bottom Sheet
-@onready var bottom_sheet: PanelContainer = $UI/BottomSheet
-@onready var tile_info_label: Label = $UI/BottomSheet/MarginContainer/VBoxContainer/TileInfoLabel
-@onready var building_info_label: Label = $UI/BottomSheet/MarginContainer/VBoxContainer/BuildingInfoLabel
-@onready var storage_label: Label = $UI/BottomSheet/MarginContainer/VBoxContainer/StorageLabel
-@onready var build_button: Button = $UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer/BuildButton
-@onready var sell_button: Button = $UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer/SellButton
-@onready var destroy_button: Button = $UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer/DestroyButton
-@onready var close_button: Button = $UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer/CloseButton
+@onready var bottom_sheet = $UI/BottomSheet
 
 # UI - Quick Info
 @onready var quick_info_panel: PanelContainer = $UI/QuickInfoPanel
@@ -36,11 +29,6 @@ extends Node2D
 # Auto-save timer
 var auto_save_timer: float = 0.0
 const AUTO_SAVE_INTERVAL: float = 60.0
-
-# Bottom sheet animation
-var bottom_sheet_tween: Tween = null
-const BOTTOM_SHEET_SHOW_POS: float = -300.0
-const BOTTOM_SHEET_HIDE_POS: float = 0.0
 
 func _ready():
 	# Initialize managers
@@ -91,77 +79,29 @@ func _connect_signals():
 	economy_manager.money_changed.connect(_on_money_changed)
 	economy_manager.cash_changed.connect(_on_cash_changed)
 
+	# Bottom sheet signals
+	bottom_sheet.build_requested.connect(_on_build_requested)
+	bottom_sheet.upgrade_requested.connect(_on_upgrade_requested)
+	bottom_sheet.sell_requested.connect(_on_sell_requested)
+	bottom_sheet.destroy_requested.connect(_on_destroy_requested)
+	bottom_sheet.close_requested.connect(_on_close_requested)
+
 	# UI signals
-	build_button.pressed.connect(_on_build_button_pressed)
-	sell_button.pressed.connect(_on_sell_button_pressed)
-	destroy_button.pressed.connect(_on_destroy_button_pressed)
-	close_button.pressed.connect(_on_close_button_pressed)
 	settings_button.pressed.connect(_on_settings_button_pressed)
 
 	# Save/Load signals
 	save_load_manager.offline_earnings_calculated.connect(_on_offline_earnings_calculated)
 
 func _on_tile_selected(tile: HexTile):
-	_update_tile_info(tile)
-	_show_bottom_sheet()
+	bottom_sheet.update_tile_info(tile, economy_manager.money)
+	bottom_sheet.show_sheet()
 
 func _on_tile_deselected(_tile: HexTile):
-	_hide_bottom_sheet()
+	bottom_sheet.hide_sheet()
 
-func _update_tile_info(tile: HexTile):
-	var terrain_name = Buildings.TerrainType.keys()[tile.terrain_type]
-	tile_info_label.text = "Tile (%d, %d) - %s" % [tile.q, tile.r, terrain_name]
-
-	if tile.building:
-		var info = tile.building.get_info()
-		building_info_label.text = "%s" % info["name"]
-
-		# Show storage info
-		var storage_text = "Storage: "
-		if tile.building is Factory:
-			storage_text += "\nInput: %d/%d" % [_get_total_storage(info["input_storage"]), info["input_capacity"]]
-			storage_text += "\nOutput: %d/%d" % [_get_total_storage(info["output_storage"]), info["output_capacity"]]
-		else:
-			storage_text += "%d/%d" % [_get_total_storage(info["storage"]), info["storage_capacity"]]
-
-		storage_label.text = storage_text
-
-		# Button states
-		build_button.disabled = true
-		sell_button.disabled = false
-		destroy_button.disabled = false
-	else:
-		building_info_label.text = "Empty"
-		storage_label.text = ""
-		build_button.disabled = false
-		sell_button.disabled = true
-		destroy_button.disabled = true
-
-func _get_total_storage(storage: Dictionary) -> int:
-	var total = 0
-	for amount in storage.values():
-		total += amount
-	return total
-
-func _on_build_button_pressed():
+func _on_build_requested(building_id: String):
 	var selected = hex_grid_manager.selected_tile
 	if not selected:
-		return
-
-	# Determine building type based on terrain
-	var building_id = ""
-
-	match selected.terrain_type:
-		Buildings.TerrainType.SAND:
-			building_id = "iron_mine"
-		Buildings.TerrainType.FIELD:
-			building_id = "wheat_farm"
-		Buildings.TerrainType.EMPTY:
-			building_id = "road"
-		Buildings.TerrainType.WATER:
-			building_id = "fishing_dock"
-
-	if building_id.is_empty():
 		return
 
 	# Check cost
@@ -177,32 +117,75 @@ func _on_build_button_pressed():
 	_create_building(selected, building_id)
 
 	# Update UI
-	_update_tile_info(selected)
+	bottom_sheet.update_tile_info(selected, economy_manager.money)
 	_show_quick_info("Built " + Buildings.get_building_name(building_id), 2.0)
 
-func _on_sell_button_pressed():
+func _on_upgrade_requested(building_id: String):
+	var selected = hex_grid_manager.selected_tile
+	if not selected or not selected.building:
+		return
+
+	# Check cost
+	var cost = Buildings.get_building_cost(building_id)
+	if not economy_manager.can_afford(cost):
+		_show_quick_info("Not enough money!", 2.0)
+		return
+
+	# Spend money
+	economy_manager.spend_money(cost)
+
+	# Remove old building
+	production_manager.unregister_building(selected.building)
+	selected.remove_building()
+
+	# Create upgraded building
+	_create_building(selected, building_id)
+
+	# Update UI
+	bottom_sheet.update_tile_info(selected, economy_manager.money)
+	_show_quick_info("Upgraded to " + Buildings.get_building_name(building_id), 2.0)
+
+func _on_sell_requested():
 	var selected = hex_grid_manager.selected_tile
 	if not selected or not selected.building:
 		return
 
 	economy_manager.auto_sell_from_building(selected.building)
-	_update_tile_info(selected)
+	bottom_sheet.update_tile_info(selected, economy_manager.money)
 	_show_quick_info("Resources sold!", 2.0)
 
-func _on_destroy_button_pressed():
+func _on_destroy_requested():
 	var selected = hex_grid_manager.selected_tile
-	if not selected or not selected.building:
+	if not selected:
 		return
 
-	# Remove building
-	production_manager.unregister_building(selected.building)
-	selected.remove_building()
+	var destroyed_name = ""
+
+	# Check if there's a building to destroy
+	if selected.building:
+		# Destroy building
+		destroyed_name = selected.building.building_name
+		production_manager.unregister_building(selected.building)
+		selected.remove_building()
+
+		# Also clear the natural structure (if building was on top of one)
+		# This makes the tile completely empty after destroying a building
+		if selected.has_object():
+			selected.remove_object()
+	# Check if there's a natural structure to destroy
+	elif selected.has_object():
+		# Destroy natural structure
+		destroyed_name = Buildings.get_object_name(selected.object_type)
+		selected.remove_object()
 
 	# Update UI
-	_update_tile_info(selected)
-	_show_quick_info("Building destroyed", 2.0)
+	bottom_sheet.update_tile_info(selected, economy_manager.money)
+	if not destroyed_name.is_empty():
+		_show_quick_info("%s destroyed" % destroyed_name, 2.0)
+	else:
+		_show_quick_info("Nothing to destroy", 2.0)
 
-func _on_close_button_pressed():
+func _on_close_requested():
 	hex_grid_manager.deselect_current_tile()
 
 func _on_settings_button_pressed():
@@ -264,24 +247,6 @@ func _on_offline_earnings_calculated(amount: int, minutes: float):
 func _update_ui():
 	_on_money_changed(economy_manager.money)
 	_on_cash_changed(economy_manager.cash)
-
-# Show bottom sheet with animation
-func _show_bottom_sheet():
-	if bottom_sheet_tween:
-		bottom_sheet_tween.kill()
-
-	bottom_sheet.visible = true
-	bottom_sheet_tween = create_tween()
-	bottom_sheet_tween.tween_property(bottom_sheet, "offset_top", BOTTOM_SHEET_SHOW_POS, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-
-# Hide bottom sheet with animation
-func _hide_bottom_sheet():
-	if bottom_sheet_tween:
-		bottom_sheet_tween.kill()
-
-	bottom_sheet_tween = create_tween()
-	bottom_sheet_tween.tween_property(bottom_sheet, "offset_top", BOTTOM_SHEET_HIDE_POS, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	bottom_sheet_tween.finished.connect(func(): bottom_sheet.visible = false)
 
 # Show quick info message
 func _show_quick_info(message: String, duration: float = 2.0):

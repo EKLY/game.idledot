@@ -47,6 +47,7 @@ func init(building_data: Dictionary):
 func get_info() -> Dictionary:
 	var info = super.get_info()
 	info["ore_type"] = ore_type
+	info["production"] = ore_type  # For UI display
 	info["production_rate"] = production_rate
 	info["ore_name"] = Resources.get_resource_name(ore_type)
 	return info

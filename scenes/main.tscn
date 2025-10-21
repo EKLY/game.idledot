@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c2wh0yxc7k8ym"]
+[gd_scene load_steps=12 format=3 uid="uid://c2wh0yxc7k8ym"]
 
 [ext_resource type="Script" uid="uid://3v81f8804slb" path="res://scripts/camera_controller.gd" id="1_camera"]
 [ext_resource type="Script" uid="uid://c05663st613d4" path="res://scripts/main.gd" id="1_main"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/icon_coin.png" id="7_coin_icon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icon_cash.png" id="8_cash_icon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icon_cog.png" id="9_cog_icon"]
+[ext_resource type="PackedScene" uid="uid://bottom_sheet_scene" path="res://scenes/ui/bottom_sheet.tscn" id="10_bottom_sheet"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -101,80 +102,7 @@ texture_normal = ExtResource("9_cog_icon")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="BottomSheet" type="PanelContainer" parent="UI"]
-visible = false
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -300.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/BottomSheet"]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_top = 15
-theme_override_constants/margin_right = 15
-theme_override_constants/margin_bottom = 15
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/BottomSheet/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="HandleBar" type="Panel" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(80, 4)
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="TileInfoLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Select a tile..."
-
-[node name="HSeparator" type="HSeparator" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="BuildingInfoLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "No building"
-
-[node name="StorageLabel" type="Label" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = ""
-
-[node name="HSeparator2" type="HSeparator" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="ButtonContainer" type="VBoxContainer" parent="UI/BottomSheet/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="BuildButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Build"
-
-[node name="SellButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Sell Resources"
-
-[node name="DestroyButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Destroy"
-
-[node name="CloseButton" type="Button" parent="UI/BottomSheet/MarginContainer/VBoxContainer/ButtonContainer"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "Close"
+[node name="BottomSheet" parent="UI" instance=ExtResource("10_bottom_sheet")]
 
 [node name="QuickInfoPanel" type="PanelContainer" parent="UI"]
 visible = false

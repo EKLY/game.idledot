@@ -34,8 +34,8 @@ var is_highlighted: bool = false
 var hex_size: float = 32.0
 var perspective_scale: float = 0.5  # Y-axis scale for pseudo-3D perspective (0.5 = easy calculation)
 var color_normal: Color = Color.WHITE
-var color_hover: Color = Color(1.0, 1.0, 0.8)
-var color_selected: Color = Color(1.0, 0.8, 0.0)
+var color_hover: Color = Color(1.2, 1.2, 0.9)  # Bright yellowish for hover
+var color_selected: Color = Color(1.5, 1.3, 0.5)  # Bright yellow-orange for selection
 
 # Terrain colors
 const TERRAIN_COLORS = {
@@ -54,6 +54,7 @@ var neighbors: Array = []
 var polygon: Polygon2D = null
 var collision_shape: CollisionPolygon2D = null
 var area_2d: Area2D = null
+var outline_line: Line2D = null  # For selection outline
 var terrain_sprite: Sprite2D = null  # For terrain texture
 var object_sprite: Sprite2D = null   # For object sprite (mountain, tree, etc.)
 var building_sprite: Sprite2D = null  # For building sprite
@@ -66,6 +67,8 @@ func _ready():
 		area_2d = get_node_or_null("Area2D")
 	if not collision_shape and area_2d:
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
+	if not outline_line:
+		outline_line = get_node_or_null("OutlineLine")
 	if not terrain_sprite:
 		terrain_sprite = get_node_or_null("TerrainSprite")
 	if not object_sprite:
@@ -97,6 +100,8 @@ func init(q_coord: int, r_coord: int, terrain: int, variation: int = 0, obj_type
 		area_2d = get_node_or_null("Area2D")
 	if not collision_shape and area_2d:
 		collision_shape = area_2d.get_node_or_null("CollisionPolygon2D")
+	if not outline_line:
+		outline_line = get_node_or_null("OutlineLine")
 	if not terrain_sprite:
 		terrain_sprite = get_node_or_null("TerrainSprite")
 	if not object_sprite:
@@ -119,6 +124,17 @@ func _setup_hex_shape():
 
 	if collision_shape:
 		collision_shape.polygon = points
+
+	# Setup outline (close the loop by adding first point at the end)
+	if outline_line:
+		var outline_points = []
+		for p in points:
+			outline_points.append(p)
+		# Close the hexagon by adding first point again
+		if points.size() > 0:
+			outline_points.append(points[0])
+		outline_line.points = outline_points
+		outline_line.z_index = 10  # Draw on top
 
 # Get hexagon corner points (flat-top orientation with perspective)
 func _get_hex_corners() -> PackedVector2Array:
@@ -246,18 +262,61 @@ func _update_visual():
 
 	# Apply state modifications
 	if is_selected:
+		# Bright yellow-orange highlight for selected tile
 		polygon.color = color_selected
-		# Highlight sprite too
+
+		# Show outline border
+		if outline_line:
+			outline_line.visible = true
+			outline_line.default_color = Color(1.0, 0.7, 0.0, 1.0)  # Bright orange
+			outline_line.width = 4.0
+
+		# Apply strong highlight to terrain sprite
 		if terrain_sprite and terrain_sprite.visible:
-			terrain_sprite.modulate = Color(1.0, 1.0, 0.7)  # Yellowish tint
+			terrain_sprite.modulate = Color(1.4, 1.3, 0.7)  # Strong yellowish tint
+
+		# Highlight object sprite too
+		if object_sprite and object_sprite.visible:
+			object_sprite.modulate = Color(1.3, 1.2, 0.9)
+
+		# Highlight building sprite
+		if building_sprite and building_sprite.visible:
+			building_sprite.modulate = Color(1.3, 1.2, 0.9)
+
 	elif is_highlighted:
+		# Softer highlight for hover
 		polygon.color = color_hover
+
+		# Show subtle outline
+		if outline_line:
+			outline_line.visible = true
+			outline_line.default_color = Color(1.0, 1.0, 0.8, 0.6)  # Light yellow, semi-transparent
+			outline_line.width = 2.5
+
 		if terrain_sprite and terrain_sprite.visible:
-			terrain_sprite.modulate = Color(1.2, 1.2, 1.0)  # Bright tint
+			terrain_sprite.modulate = Color(1.2, 1.2, 1.0)  # Subtle bright tint
+
+		if object_sprite and object_sprite.visible:
+			object_sprite.modulate = Color(1.1, 1.1, 1.0)
+
+		if building_sprite and building_sprite.visible:
+			building_sprite.modulate = Color(1.1, 1.1, 1.0)
 	else:
+		# Normal state
 		polygon.color = base_color
+
+		# Hide outline
+		if outline_line:
+			outline_line.visible = false
+
 		if terrain_sprite and terrain_sprite.visible:
 			terrain_sprite.modulate = Color.WHITE  # Normal
+
+		if object_sprite and object_sprite.visible:
+			object_sprite.modulate = Color.WHITE
+
+		if building_sprite and building_sprite.visible:
+			building_sprite.modulate = Color.WHITE
 
 	# Add black border for visibility
 	polygon.texture = null

@@ -48,6 +48,7 @@ func init(building_data: Dictionary):
 func get_info() -> Dictionary:
 	var info = super.get_info()
 	info["crop_type"] = crop_type
+	info["production"] = crop_type  # For UI display
 	info["growth_time"] = growth_time
 	info["crop_name"] = Resources.get_resource_name(crop_type)
 	return info
