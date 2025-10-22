@@ -204,3 +204,9 @@ func move_to(target_pos: Vector2, duration: float = 0.5):
 func center_on(target_pos: Vector2):
 	position = target_pos
 	_apply_bounds()
+
+# Reset camera to default position and zoom
+func reset_camera():
+	position = Vector2.ZERO
+	zoom = Vector2(0.8, 0.8)
+	_apply_bounds()

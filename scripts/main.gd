@@ -26,6 +26,9 @@ extends Node2D
 @onready var quick_info_panel: PanelContainer = $UI/QuickInfoPanel
 @onready var quick_info_label: Label = $UI/QuickInfoPanel/MarginContainer/QuickInfoLabel
 
+# UI - Settings Panel
+@onready var settings_panel = $UI/SettingsPanel
+
 # Auto-save timer
 var auto_save_timer: float = 0.0
 const AUTO_SAVE_INTERVAL: float = 60.0
@@ -88,6 +91,10 @@ func _connect_signals():
 
 	# UI signals
 	settings_button.pressed.connect(_on_settings_button_pressed)
+
+	# Settings panel signals
+	settings_panel.new_game_requested.connect(_on_new_game_requested)
+	settings_panel.closed.connect(_on_settings_panel_closed)
 
 	# Save/Load signals
 	save_load_manager.offline_earnings_calculated.connect(_on_offline_earnings_calculated)
@@ -189,8 +196,42 @@ func _on_close_requested():
 	hex_grid_manager.deselect_current_tile()
 
 func _on_settings_button_pressed():
-	# TODO: Show settings menu
-	_show_quick_info("Settings coming soon", 2.0)
+	settings_panel.show_panel()
+
+func _on_settings_panel_closed():
+	# Settings panel closed - nothing to do
+	pass
+
+func _on_new_game_requested():
+	# Clear current selection
+	if hex_grid_manager.selected_tile:
+		hex_grid_manager.deselect_current_tile()
+		bottom_sheet.hide_sheet()
+
+	# Unregister all buildings from production manager
+	production_manager.clear_buildings()
+
+	# Clear the grid
+	hex_grid_manager.clear_grid()
+
+	# Reset economy
+	economy_manager.reset_economy()
+
+	# Recreate grid with new random generation
+	hex_grid_manager.create_grid(tile_container)
+
+	# Reset camera position and bounds
+	camera.reset_camera()
+	_setup_camera_bounds()
+
+	# Update UI
+	_update_ui()
+
+	# Delete save file to start fresh
+	save_load_manager.delete_save_file()
+
+	# Show confirmation
+	_show_quick_info("New game started!", 3.0)
 
 func _create_building(tile: HexTile, building_id: String):
 	var building: BuildingBase = null

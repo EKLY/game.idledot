@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c2wh0yxc7k8ym"]
+[gd_scene load_steps=13 format=3 uid="uid://c2wh0yxc7k8ym"]
 
 [ext_resource type="Script" uid="uid://3v81f8804slb" path="res://scripts/camera_controller.gd" id="1_camera"]
 [ext_resource type="Script" uid="uid://c05663st613d4" path="res://scripts/main.gd" id="1_main"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/icon_cash.png" id="8_cash_icon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/icon_cog.png" id="9_cog_icon"]
 [ext_resource type="PackedScene" uid="uid://bottom_sheet_scene" path="res://scenes/ui/bottom_sheet.tscn" id="10_bottom_sheet"]
+[ext_resource type="PackedScene" uid="uid://settings_panel_scene" path="res://scenes/ui/settings_panel.tscn" id="11_settings"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -131,3 +132,5 @@ theme_override_font_sizes/font_size = 16
 text = "Tap a tile"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="SettingsPanel" parent="UI" instance=ExtResource("11_settings")]

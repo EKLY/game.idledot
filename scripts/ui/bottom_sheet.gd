@@ -14,6 +14,7 @@ signal close_requested()
 @onready var location_label: Label = $MarginContainer/VBoxContainer/HeaderSection/LocationLabel
 
 # Detail
+@onready var detail_separator: HSeparator = $MarginContainer/VBoxContainer/HSeparator1
 @onready var detail_label: Label = $MarginContainer/VBoxContainer/DetailLabel
 
 # Build/Upgrade section
@@ -48,6 +49,14 @@ func _ready():
 	sell_button.pressed.connect(_on_sell_pressed)
 	destroy_button.pressed.connect(_on_destroy_pressed)
 	close_button.pressed.connect(_on_close_pressed)
+
+	# Enable processing for progress bar updates
+	set_process(true)
+
+func _process(_delta: float):
+	# Update progress bar if production section is visible and we have a building
+	if production_section.visible and current_tile and current_tile.building:
+		_update_progress_bar_realtime()
 
 func show_sheet():
 	if sheet_tween:
@@ -104,9 +113,9 @@ func _show_empty_tile_info(tile: HexTile):
 	# Header
 	tile_name_label.text = "Empty Tile"
 
-	# Detail
-	detail_label.text = "Empty %s terrain" % terrain_name
-	detail_label.visible = false  # Hide detail for empty tiles
+	# Detail (hide for empty tiles)
+	detail_separator.visible = false
+	detail_label.visible = false
 
 	# Show buildable section
 	build_upgrade_section.visible = true
@@ -131,7 +140,13 @@ func _show_natural_structure_info(tile: HexTile):
 	tile_name_label.text = structure_name
 
 	# Detail
-	detail_label.text = structure_desc if structure_desc else "Natural structure"
+	if structure_desc and not structure_desc.is_empty():
+		detail_separator.visible = true
+		detail_label.text = structure_desc
+		detail_label.visible = true
+	else:
+		detail_separator.visible = false
+		detail_label.visible = false
 
 	# Show buildable section - what can be built on this structure
 	build_upgrade_section.visible = true
@@ -157,7 +172,13 @@ func _show_existing_building_info(tile: HexTile):
 	# Detail
 	var building_id = tile.building.building_id if "building_id" in tile.building else ""
 	var building_desc = Buildings.get_building_description(building_id)
-	detail_label.text = building_desc if building_desc else "Building"
+	if building_desc and not building_desc.is_empty():
+		detail_separator.visible = true
+		detail_label.text = building_desc
+		detail_label.visible = true
+	else:
+		detail_separator.visible = false
+		detail_label.visible = false
 
 	# Check if there are upgrades available
 	var upgrades = Buildings.get_upgrades_for(building_id)
@@ -267,6 +288,45 @@ func _update_production_info(building: BuildingBase, info: Dictionary):
 		time_label.text = "0s"
 
 	# Show storage
+	var storage_text = ""
+	if building is Factory:
+		var input_total = _get_total_storage(info.get("input_storage", {}))
+		var input_capacity = info.get("input_capacity", 0)
+		var output_total = _get_total_storage(info.get("output_storage", {}))
+		var output_capacity = info.get("output_capacity", 0)
+		storage_text = "Input: %d/%d | Output: %d/%d" % [input_total, input_capacity, output_total, output_capacity]
+	else:
+		var total = _get_total_storage(info.get("storage", {}))
+		var capacity = info.get("storage_capacity", 0)
+		storage_text = "Storage: %d / %d" % [total, capacity]
+
+	storage_label.text = storage_text
+
+func _update_progress_bar_realtime():
+	# Get fresh info from building
+	var building = current_tile.building
+	if not building:
+		return
+
+	var info = building.get_info()
+
+	# Update only progress bar and time
+	var progress = info.get("production_progress", 0.0)
+	var production_time = info.get("production_time", 0.0)
+	var time_remaining = 0.0
+
+	if production_time > 0:
+		time_remaining = production_time * (1.0 - progress / 100.0)
+
+	progress_bar.value = progress
+
+	# Format time remaining
+	if time_remaining > 0:
+		time_label.text = "%ds" % int(ceil(time_remaining))
+	else:
+		time_label.text = "0s"
+
+	# Update storage (may change as production completes)
 	var storage_text = ""
 	if building is Factory:
 		var input_total = _get_total_storage(info.get("input_storage", {}))
