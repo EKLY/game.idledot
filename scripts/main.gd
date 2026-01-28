@@ -4,21 +4,31 @@ extends Control
 @onready var trend_label: Label = $HUD/TrendLabel
 @onready var income_label: Label = $HUD/IncomeLabel
 @onready var offline_label: Label = $HUD/OfflineLabel
-@onready var grid: GridContainer = $MapContainer/Grid
-@onready var sheet_icon: TextureRect = $BottomSheet/SheetVBox/Icon
-@onready var sheet_name: Label = $BottomSheet/SheetVBox/NameLabel
-@onready var sheet_level: Label = $BottomSheet/SheetVBox/LevelLabel
-@onready var sheet_income: Label = $BottomSheet/SheetVBox/IncomeLabel
-@onready var sheet_next_income: Label = $BottomSheet/SheetVBox/NextIncomeLabel
-@onready var upgrade_button: Button = $BottomSheet/SheetVBox/UpgradeRow/UpgradeButton
-@onready var qty_x1: Button = $BottomSheet/SheetVBox/QtyRow/QtyX1
-@onready var qty_x10: Button = $BottomSheet/SheetVBox/QtyRow/QtyX10
-@onready var qty_xmax: Button = $BottomSheet/SheetVBox/QtyRow/QtyXMax
+@onready var map_container: Control = $MapContainer
+@onready var map_root: Control = $MapContainer/MapRoot
+@onready var grid: GridContainer = $MapContainer/MapRoot/Grid
+@onready var grid_lines: Control = $MapContainer/MapRoot/GridLines
+@onready var bottom_sheet: PanelContainer = $BottomSheet
+@onready var sheet_icon: TextureRect = $BottomSheet/SheetHBox/Icon
+@onready var sheet_name: Label = $BottomSheet/SheetHBox/RightVBox/HeaderRow/NameLabel
+@onready var sheet_level: Label = $BottomSheet/SheetHBox/RightVBox/LevelLabel
+@onready var sheet_income: Label = $BottomSheet/SheetHBox/RightVBox/IncomeLabel
+@onready var sheet_next_income: Label = $BottomSheet/SheetHBox/RightVBox/NextIncomeLabel
+@onready var upgrade_button: Button = $BottomSheet/SheetHBox/RightVBox/UpgradeRow/UpgradeButton
+@onready var qty_x1: Button = $BottomSheet/SheetHBox/RightVBox/QtyRow/QtyX1
+@onready var qty_x10: Button = $BottomSheet/SheetHBox/RightVBox/QtyRow/QtyX10
+@onready var qty_xmax: Button = $BottomSheet/SheetHBox/RightVBox/QtyRow/QtyXMax
+@onready var close_button: Button = $BottomSheet/SheetHBox/RightVBox/HeaderRow/CloseButton
 
 var _buttons: Dictionary = {}
 var _tile_textures: Dictionary = {}
 var _icon_textures: Dictionary = {}
 var _badges: Dictionary = {}
+var _cell_size: int = 64
+var _sheet_tween: Tween
+var _sheet_visible: bool = false
+var _dragging: bool = false
+var _last_drag_pos: Vector2 = Vector2.ZERO
 var _selected_id: String = ""
 var _upgrade_qty: int = 1
 
@@ -26,10 +36,11 @@ func _ready() -> void:
 	_apply_theme()
 	_build_map()
 	_connect_signals()
-	_select_first_unlocked()
 	_set_qty(1)
 	_refresh_ui()
 	_setup_autosave()
+	call_deferred("_hide_sheet_immediate")
+	map_container.mouse_filter = Control.MOUSE_FILTER_STOP
 
 func _process(delta: float) -> void:
 	Economy.tick(delta)
@@ -40,6 +51,7 @@ func _connect_signals() -> void:
 	qty_x1.pressed.connect(func(): _set_qty(1))
 	qty_x10.pressed.connect(func(): _set_qty(10))
 	qty_xmax.pressed.connect(func(): _set_qty(-1))
+	close_button.pressed.connect(_on_close_pressed)
 	Events.offline_award.connect(_on_offline_award)
 
 func _build_map() -> void:
@@ -55,6 +67,14 @@ func _build_map() -> void:
 	var cols = int(grid_cfg.get("cols", 7))
 	var rows = int(grid_cfg.get("rows", 7))
 	grid.columns = cols
+	var map_size = Vector2(cols * _cell_size, rows * _cell_size)
+	grid.custom_minimum_size = map_size
+	grid_lines.custom_minimum_size = map_size
+	map_root.custom_minimum_size = map_size
+	grid_lines.set("cols", cols)
+	grid_lines.set("rows", rows)
+	grid_lines.set("cell_size", _cell_size)
+	grid_lines.queue_redraw()
 
 	var by_pos := {}
 	for b in Economy.get_buildings():
@@ -65,8 +85,9 @@ func _build_map() -> void:
 	for y in range(rows):
 		for x in range(cols):
 			var btn = TextureButton.new()
-			btn.custom_minimum_size = Vector2(64, 64)
+			btn.custom_minimum_size = Vector2(_cell_size, _cell_size)
 			btn.focus_mode = Control.FOCUS_NONE
+			btn.mouse_filter = Control.MOUSE_FILTER_PASS
 			var key = "%d,%d" % [x, y]
 			if by_pos.has(key):
 				var b = by_pos[key]
@@ -104,6 +125,7 @@ func _on_tile_pressed(building_id: String) -> void:
 	_selected_id = building_id
 	Events.emit_signal("building_selected", building_id)
 	_refresh_ui()
+	_show_sheet()
 
 func _refresh_ui() -> void:
 	money_label.text = "Money: %s" % _fmt(Economy.money)
@@ -204,6 +226,95 @@ func _on_offline_award(amount: float, seconds: float) -> void:
 
 func _exit_tree() -> void:
 	SaveService.save()
+
+func _on_map_gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		var touch = event as InputEventScreenTouch
+		print("[map] touch pressed=", touch.pressed, " pos=", touch.position)
+		_dragging = touch.pressed
+		_last_drag_pos = touch.position
+	elif event is InputEventScreenDrag:
+		var drag = event as InputEventScreenDrag
+		print("[map] touch drag pos=", drag.position)
+		_apply_drag(drag.position)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		print("[map] mouse button pressed=", event.pressed, " pos=", event.position)
+		_dragging = event.pressed
+		_last_drag_pos = event.position
+	elif event is InputEventMouseMotion and _dragging:
+		print("[map] mouse drag pos=", event.position)
+		_apply_drag(event.position)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		var touch = event as InputEventScreenTouch
+		if _point_in_map(touch.position):
+			print("[map] unhandled touch pressed=", touch.pressed, " pos=", touch.position)
+			_dragging = touch.pressed
+			_last_drag_pos = touch.position
+		elif not touch.pressed:
+			_dragging = false
+	elif event is InputEventScreenDrag:
+		if _dragging:
+			var drag = event as InputEventScreenDrag
+			print("[map] unhandled touch drag pos=", drag.position)
+			_apply_drag(drag.position)
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and _point_in_map(event.position):
+			print("[map] unhandled mouse pressed pos=", event.position)
+			_dragging = true
+			_last_drag_pos = event.position
+		elif not event.pressed:
+			print("[map] unhandled mouse released pos=", event.position)
+			_dragging = false
+	elif event is InputEventMouseMotion and _dragging:
+		print("[map] unhandled mouse drag pos=", event.position)
+		_apply_drag(event.position)
+
+func _apply_drag(pos: Vector2) -> void:
+	var delta = pos - _last_drag_pos
+	print("[map] apply drag delta=", delta)
+	_last_drag_pos = pos
+	var view = map_container.size
+	var map_size = map_root.custom_minimum_size
+	var min_x = min(0.0, view.x - map_size.x)
+	var min_y = min(0.0, view.y - map_size.y)
+	var new_pos = map_root.position + delta
+	new_pos.x = clamp(new_pos.x, min_x, 0.0)
+	new_pos.y = clamp(new_pos.y, min_y, 0.0)
+	map_root.position = new_pos
+
+func _point_in_map(pos: Vector2) -> bool:
+	return map_container.get_global_rect().has_point(pos)
+
+func _on_close_pressed() -> void:
+	_hide_sheet()
+
+func _hide_sheet_immediate() -> void:
+	_sheet_visible = false
+	var view_h = get_viewport_rect().size.y
+	bottom_sheet.position.y = view_h
+
+func _show_sheet() -> void:
+	if _sheet_visible:
+		return
+	_sheet_visible = true
+	_animate_sheet(true)
+
+func _hide_sheet() -> void:
+	if not _sheet_visible:
+		return
+	_sheet_visible = false
+	_animate_sheet(false)
+
+func _animate_sheet(show: bool) -> void:
+	if _sheet_tween and _sheet_tween.is_running():
+		_sheet_tween.kill()
+	_sheet_tween = create_tween()
+	var view_h = get_viewport_rect().size.y
+	var sheet_h = max(160.0, bottom_sheet.size.y)
+	var target_y = view_h - sheet_h if show else view_h
+	_sheet_tween.tween_property(bottom_sheet, "position:y", target_y, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _is_unlocked(b: Dictionary) -> bool:
 	var unlock = b.get("unlock", {"type": "start"})

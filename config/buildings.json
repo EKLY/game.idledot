@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "grid": { "cols": 7, "rows": 7 },
+  "grid": { "cols": 12, "rows": 12 },
   "buildings": [
     {
       "id": "B001",

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id=1]
+[ext_resource type="Script" path="res://scripts/ui/grid_lines.gd" id=2]
 
 [node name="Main" type="Control"]
 anchor_left = 0.0
@@ -46,7 +47,7 @@ text = "Income/sec: 0"
 [node name="OfflineLabel" type="Label" parent="HUD"]
 text = ""
 
-[node name="MapContainer" type="MarginContainer" parent="."]
+[node name="MapContainer" type="Control" parent="."]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
@@ -55,8 +56,27 @@ offset_left = 24.0
 offset_top = 180.0
 offset_right = -24.0
 offset_bottom = -260.0
+clip_contents = true
 
-[node name="Grid" type="GridContainer" parent="MapContainer"]
+[node name="MapRoot" type="Control" parent="MapContainer"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="GridLines" type="Control" parent="MapContainer/MapRoot"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+script = ExtResource(2)
+
+[node name="Grid" type="GridContainer" parent="MapContainer/MapRoot"]
 columns = 7
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -71,40 +91,55 @@ offset_top = -240.0
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="SheetVBox" type="VBoxContainer" parent="BottomSheet"]
+[node name="SheetHBox" type="HBoxContainer" parent="BottomSheet"]
 size_flags_horizontal = 4
 size_flags_vertical = 4
+theme_override_constants/separation = 16
 
-[node name="Icon" type="TextureRect" parent="BottomSheet/SheetVBox"]
-custom_minimum_size = Vector2(72, 72)
+[node name="Icon" type="TextureRect" parent="BottomSheet/SheetHBox"]
+custom_minimum_size = Vector2(96, 96)
 expand_mode = 1
 stretch_mode = 6
+size_flags_vertical = 0
 
-[node name="NameLabel" type="Label" parent="BottomSheet/SheetVBox"]
+[node name="RightVBox" type="VBoxContainer" parent="BottomSheet/SheetHBox"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 6
+
+[node name="HeaderRow" type="HBoxContainer" parent="BottomSheet/SheetHBox/RightVBox"]
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="BottomSheet/SheetHBox/RightVBox/HeaderRow"]
 text = "Select a building"
+size_flags_horizontal = 4
 
-[node name="LevelLabel" type="Label" parent="BottomSheet/SheetVBox"]
+[node name="CloseButton" type="Button" parent="BottomSheet/SheetHBox/RightVBox/HeaderRow"]
+text = "X"
+
+[node name="LevelLabel" type="Label" parent="BottomSheet/SheetHBox/RightVBox"]
 text = "Level: 0"
 
-[node name="IncomeLabel" type="Label" parent="BottomSheet/SheetVBox"]
+[node name="IncomeLabel" type="Label" parent="BottomSheet/SheetHBox/RightVBox"]
 text = "Income/sec: 0"
 
-[node name="NextIncomeLabel" type="Label" parent="BottomSheet/SheetVBox"]
+[node name="NextIncomeLabel" type="Label" parent="BottomSheet/SheetHBox/RightVBox"]
 text = "Next: 0"
 
-[node name="QtyRow" type="HBoxContainer" parent="BottomSheet/SheetVBox"]
+[node name="QtyRow" type="HBoxContainer" parent="BottomSheet/SheetHBox/RightVBox"]
+theme_override_constants/separation = 8
 
-[node name="QtyX1" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+[node name="QtyX1" type="Button" parent="BottomSheet/SheetHBox/RightVBox/QtyRow"]
 text = "x1"
 
-[node name="QtyX10" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+[node name="QtyX10" type="Button" parent="BottomSheet/SheetHBox/RightVBox/QtyRow"]
 text = "x10"
 
-[node name="QtyXMax" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+[node name="QtyXMax" type="Button" parent="BottomSheet/SheetHBox/RightVBox/QtyRow"]
 text = "xMAX"
 
-[node name="UpgradeRow" type="HBoxContainer" parent="BottomSheet/SheetVBox"]
+[node name="UpgradeRow" type="HBoxContainer" parent="BottomSheet/SheetHBox/RightVBox"]
 
-[node name="UpgradeButton" type="Button" parent="BottomSheet/SheetVBox/UpgradeRow"]
+[node name="UpgradeButton" type="Button" parent="BottomSheet/SheetHBox/RightVBox/UpgradeRow"]
 text = "Upgrade"
 size_flags_horizontal = 4
