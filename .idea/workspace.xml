@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/main.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/welcome.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/welcome.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/welcome.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/welcome.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,7 +52,7 @@
 }]]></component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1771556410856" />
-    <option name="spentUsd" value="0.0361683" />
+    <option name="spentUsd" value="0.07749705" />
   </component>
   <component name="RecapUselessUpdatesCounter">
     <option name="suspendCountdown" value="7" />
@@ -116,7 +119,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769585792847</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="...">
+      <option name="closed" value="true" />
+      <created>1769587183744</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1769587183744</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -125,7 +136,7 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;assets/sprites/building_beach_coral.png.import&#10;#&#9;assets/sprites/building_building_furture.png.import&#10;#&#9;assets/sprites/building_building_slider.png.import&#10;#&#9;assets/sprites/building_factory.png.import&#10;#&#9;assets/sprites/building_factory_chimney.png.import&#10;#&#9;assets/sprites/building_farm.png.import&#10;#&#9;assets/sprites/building_farm_wheat.png.import&#10;#&#9;assets/sprites/building_fishing_ice.png.import&#10;#&#9;assets/sprites/building_forest.png.import&#10;#&#9;assets/sprites/building_forest_deep.png.import&#10;#&#9;assets/sprites/building_forest_haunted.png.import&#10;#&#9;assets/sprites/building_fram_market.png.import&#10;#&#9;assets/sprites/building_hotel_snow.png.import&#10;#&#9;assets/sprites/building_mill.png.import&#10;#&#9;assets/sprites/building_mine.png.import&#10;#&#9;assets/sprites/building_mountain.png.import&#10;#&#9;assets/sprites/building_mountain_mine.png.import&#10;#&#9;assets/sprites/building_mountain_waterfall.png.import&#10;#&#9;assets/sprites/building_restaurant.png.import&#10;#&#9;assets/sprites/building_restaurant_seafood.png.import&#10;#&#9;assets/sprites/building_rock_ice.png.import&#10;#&#9;assets/sprites/building_school.png.import&#10;#&#9;assets/sprites/building_wood_log.png.import&#10;#&#9;assets/sprites/building_wood_plank.png.import" />
     <MESSAGE value="..." />
-    <option name="LAST_COMMIT_MESSAGE" value="..." />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
