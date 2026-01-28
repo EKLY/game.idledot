@@ -89,6 +89,12 @@ Standard folders (initial layout):
 * Class names: PascalCase (when `class_name` is used)
 * Node names: PascalCase for readability in the scene tree
 
+Asset naming (buildings):
+
+* Building icons and tiles live in `assets/sprites/buildings/`
+* UI icon: `b001.png`
+* Map tile: `b001_tile.png`
+
 ### 3.4 Core Architecture (Godot Autoloads, v0.x)
 
 Use Autoload singletons for core systems (names below are recommended and can be adjusted):
