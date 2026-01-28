@@ -1,0 +1,378 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/GdSdk.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/GdSdk.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MOBILE_SETUP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SPRITES_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SPRITE_TEMPLATE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_beach_coral.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_beach_coral.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_furture.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_furture.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_slider.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_slider.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_animal.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_animal.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_entrance.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_entrance.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_lava.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_lava.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_dam.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_dam.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory_chimney.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory_chimney.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm_wheat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm_wheat.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fishing_ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fishing_ice.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_deep.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_deep.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_haunted.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_haunted.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_hotspring.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_hotspring.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fram_market.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fram_market.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_hotel_snow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_hotel_snow.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_iceberg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_iceberg.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mill.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mill.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine_shaft.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine_shaft.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_mine.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_mine.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_waterfall.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_waterfall.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_powerplant_nuclear.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_powerplant_nuclear.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_quarry.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_quarry.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant_seafood.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant_seafood.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_ice.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_sphere.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_sphere.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_school.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_school.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_windmill.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_windmill.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_log.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_log.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_plank.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_plank.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_bomb.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_bomb.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash_wing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash_wing.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_close.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cog.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cog.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coin.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coin.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coins.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coins.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_ruby.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_ruby.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_sale.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_sale.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/object_mountain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/object_mountain.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_coal_ore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_coal_ore.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_copper.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_copper.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_corn.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_corn.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_electric.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_electric.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_ice.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_iron.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_iron.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_plank.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_plank.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_stone.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_stone.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_water.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_water.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_wood.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/product_wood.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_desert.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_desert.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_farmland.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_farmland.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-0.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-1.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-2.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-3.png.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/buildings.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/buildings.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/buildings_data.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/buildings_data.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/recipes.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/recipes.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/resources.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoload/resources.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/icon.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/icon.svg.import" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/hex_tile.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/main.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/ui/bottom_sheet.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/ui/bottom_sheet_old.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/ui/buildable_item.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/ui/settings_panel.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/building_base.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/building_base.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/factory.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/factory.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/farm.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/farm.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/mine.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/mine.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/road.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/buildings/road.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/camera_controller.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/camera_controller.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/hex_tile.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/hex_tile.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/main.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/main.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/economy_manager.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/economy_manager.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/hex_grid_manager.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/hex_grid_manager.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/production_manager.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/production_manager.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/save_load_manager.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/save_load_manager.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/transport_manager.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/managers/transport_manager.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet_old.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet_old.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/buildable_item.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/buildable_item.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/settings_panel.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/settings_panel.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_calculate_tiles.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_calculate_tiles.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/.gdignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.afphoto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.aftemplate" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/bomb.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/cash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/cash_wing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/cog.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/coin.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/coins.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/ruby.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/icon/sale.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/menu_control.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/beach_coral.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/building_furture.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/building_slider.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/cave.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/cave_animal.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/cave_entrance.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/cave_lava.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/dam.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/factory.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/factory_chimney.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/farm.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/farm_wheat.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/fishing_ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/forest.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/forest_deep.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/forest_haunted.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/forest_hotspring.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/fram_market.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/hotel_snow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/iceberg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mill.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mine.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mine_shaft.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mountain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mountain_mine.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/mountain_waterfall.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/powerplant_nuclear.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/quarry.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/restaurant.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/restaurant_seafood.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/rock_ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/rock_sphere.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/school.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/windmill.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/wood_log.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object/wood_plank.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/object_resize.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/coal_ore.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/copper.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/corn.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/electric.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/ice.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/iron.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/plank.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/stone.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/water.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/~develop/product/wood.png" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="75" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="38sMBe2nS0F9ME7hop40dD1f30k" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "settings.editor.selected.configurable": "settings.sync"
+  }
+}]]></component>
+  <component name="RecapSpentCounter">
+    <option name="endsOfQuotaMs" value="1771556410856" />
+    <option name="spentUsd" value="0.0031083" />
+  </component>
+  <component name="RecapUselessUpdatesCounter">
+    <option name="suspendCountdown" value="9" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="" />
+      <created>1769583692407</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1769583692407</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

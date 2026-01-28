@@ -1,0 +1,2177 @@
+Index: scripts/welcome.gd.uid
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/scripts/welcome.gd.uid b/scripts/welcome.gd.uid
+new file mode 100644
+--- /dev/null	(date 1769583276263)
++++ b/scripts/welcome.gd.uid	(date 1769583276263)
+@@ -0,0 +1,1 @@
++uid://5bph3otbnfkn
+Index: scripts/welcome.gd
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/scripts/welcome.gd b/scripts/welcome.gd
+new file mode 100644
+--- /dev/null	(date 1769582503128)
++++ b/scripts/welcome.gd	(date 1769582503128)
+@@ -0,0 +1,30 @@
++extends Control
++
++@export var next_scene_path: String = "res://scenes/main.tscn"
++@export var auto_advance_seconds: float = 1.5
++
++var _advanced := false
++
++func _ready() -> void:
++	if auto_advance_seconds > 0.0:
++		_advance_after_delay()
++
++func _unhandled_input(event: InputEvent) -> void:
++	if _advanced:
++		return
++	if event is InputEventScreenTouch and event.pressed:
++		_advance()
++	elif event is InputEventMouseButton and event.pressed:
++		_advance()
++
++func _advance_after_delay() -> void:
++	await get_tree().create_timer(auto_advance_seconds).timeout
++	_advance()
++
++func _advance() -> void:
++	if _advanced:
++		return
++	_advanced = true
++	if next_scene_path.is_empty():
++		return
++	get_tree().change_scene_to_file(next_scene_path)
+Index: AI_SPEC.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/AI_SPEC.md b/AI_SPEC.md
+new file mode 100644
+--- /dev/null	(date 1769582375967)
++++ b/AI_SPEC.md	(date 1769582375967)
+@@ -0,0 +1,653 @@
++# AI_SPEC.md
++
++> Project: Thai Satire Idle Economic (Mobile Idle / Incremental)
++>
++> Purpose: This spec is written for AI agents and collaborators. It defines non-negotiable rules, scope, architecture boundaries, and deliverables.
++
++---
++
++## 0) Project Summary
++
++Build a **mobile-only** idle/incremental economic game with a **Thai cultural satire tone** (system-level parody, not real-world political/person references). The primary experience is a **top-down grid city map** where players tap buildings to open a **bottom-sheet building panel** to upgrade and manage production.
++
++Core systems:
++
++* Idle economy (exponential growth)
++* Offline progress
++* Prestige loop
++* Rewarded ads (optional, no forced ads)
++* Seasonal leaderboard
++
++---
++
++## 1) Non-Goals
++
++* No PC/web version.
++* No city-builder simulation (no complex construction/roads/zoning).
++* No deep story cutscenes.
++* No forced interstitial ads.
++* No real-person/real-party/real-institution references.
++
++---
++
++## 2) Tone & Content Rules (Thai Satire Safety)
++
++### 2.1 Allowed satire
++
++* Consumer trends, hype cycles, “image > efficiency”, queues/paperwork, stamp/permit bureaucracy (fictionalized).
++* Generic cultural behaviors (e.g., promo culture, point collecting, festival economy).
++
++### 2.2 Disallowed
++
++* References to real politicians, parties, institutions, or identifiable public figures.
++* Hate/harassment against protected groups.
++* Defamation of real entities.
++
++### 2.3 Naming convention
++
++Use **fictional brands** and **parody-style neutral names** (e.g., “สำนักงานประทับใจ”, “ศูนย์เอกสารดีเด่น”, “ทีมกระแส”). Avoid names that map 1:1 to real organizations.
++
++---
++
++## 3) Target Platform & UX Constraints
++
++* Engine: **Godot 4.6**.
++* Language: **GDScript**.
++
++* Platform: **iOS + Android** (mobile only).
++* Input: touch, one-hand friendly.
++* Performance: stable 60fps UI; economy ticks must not cause UI jank.
++* Sessions: short, frequent (30–120 seconds typical).
++
++### 3.1 Pixel Art Rules (Authoritative Sub-Spec)
++
++* All 2D pixel art assets MUST comply with `PIXEL_ART_SPEC.md`.
++* `PIXEL_ART_SPEC.md` is the single source of truth for pixel art rules and is subordinate to this document.
++* If any conflict exists between `PIXEL_ART_SPEC.md` and AI_SPEC.md, AI_SPEC.md MUST prevail.
++
++### 3.2 Project Structure (Godot standard)
++
++Required root file:
++
++* `project.godot`
++
++Standard folders (initial layout):
++
++* `addons/`
++* `assets/` (subfolders: `assets/sprites/`, `assets/ui/`, `assets/audio/`)
++* `config/` (JSON only)
++* `scenes/`
++* `scripts/`
++* `ui/`
++* `tests/`
++
++### 3.3 Naming Conventions (recommended)
++
++* Files/folders: **snake_case** (preferred)
++* Scenes: snake_case `.tscn` (match file name)
++* Scripts: snake_case `.gd` (match scene/script name)
++* Class names: PascalCase (when `class_name` is used)
++* Node names: PascalCase for readability in the scene tree
++
++### 3.4 Core Architecture (Godot Autoloads, v0.x)
++
++Use Autoload singletons for core systems (names below are recommended and can be adjusted):
++
++* `GameState` (session state, current screen, session stats)
++* `Economy` (ticks, income calc, trend)
++* `SaveService` (JSON save/load, versioning, migration)
++* `ConfigService` (loads JSON configs, caches)
++* `TimeService` (offline time, timers, time scale)
++* `Events` (lightweight signal hub for cross-system events)
++
++UI structure should follow the dedicated UI docs under `docs/` (if conflicts occur, AI_SPEC.md prevails).
++
++---
++
++## 4) Core Gameplay Pillars
++
++1. **Numbers always moving**: money/income visibly updates.
++2. **Map as selector**: the map is the primary screen for context; management happens via panels.
++3. **Single dominant action**: for buildings, the main action is Upgrade.
++4. **Casual-friendly**: minimal friction, soft gates, no heavy time gates.
++5. **Config-driven economy**: avoid hard-coded numbers scattered in UI/logic.
++
++---
++
++## 5) Core Loop
++
++### 5.1 Primary loop
++
++Produce → Accumulate → Upgrade → Produce faster → repeat
++
++### 5.2 Mid loop
++
++Unlock systems (infrastructure, trend) → automation → faster exponential growth
++
++### 5.3 Long loop (Prestige)
++
++Reset partial progress → gain permanent currency → accelerate next run
++
++---
++
++## 6) Economy Model (Must-follow)
++
++### 6.1 Resources (3-layer)
++
++* **Money**: primary currency.
++* **Trend** (กระแส): global multiplier with decay.
++* **Prestige currency** (บารมี/ตราประทับ): permanent upgrades.
++
++No additional resource types in MVP.
++
++### 6.2 Formulas (single source of truth)
++
++All production and costs must be computed from config.
++
++* Building upgrade cost:
++
++  * `cost(level) = baseCost × (costRate ^ level)`
++* Building output:
++
++  * `output(level) = baseOutput × (outputRate ^ level)`
++* Global income per second:
++
++  * `incomePerSec = Σ output(building_i) × trendMultiplier × globalBonus × boosts`
++
++### 6.3 Pacing targets (initial defaults)
++
++* First meaningful upgrade: **20–30s** from fresh start.
++* First prestige: **90–180 min**.
++* Offline cap: **12 hours**.
++* Offline efficiency: **70%**.
++
++---
++
++## 7) Offline Progress (Required)
++
++* Persist `lastActiveAt`.
++* On launch/resume:
++
++  * compute `elapsed = now - lastActiveAt`.
++  * clamp to offline cap.
++  * award offline earnings using offline efficiency.
++* Show **offline summary modal** once (dismissible).
++
++---
++
++## 8) Buildings & Content Structure
++
++### 8.1 Building archetypes
++
++* Stable income buildings (steady)
++* Trend-driven buildings (volatile; higher ceiling)
++* Infrastructure buildings (reduce friction; increase efficiency)
++* PR/Event buildings (increase trend)
++
++### 8.2 MVP building count
++
++* Early game: 6 buildings
++* v1 content: 12–18 buildings
++
++### 8.3 Unlock system
++
++Soft gates only:
++
++* money threshold
++* trend threshold
++* prior building level
++* mission completion
++
++Avoid hard time gates.
++
++### 8.4 Starter Buildings (MVP: 6 buildings)
++
++> Goal: cover the 4 archetypes while keeping early progression simple. Names are fictional/parody-style and not mapped 1:1 to real entities.
++
++#### B001 — รถเข็นสารพัด (Street Cart)
++
++* Archetype: Stable income
++* Role: first building; teaches “tap → panel → upgrade”
++* Unlock: start
++* Notes: very low cost, low output, fast upgrades
++
++#### B002 — ร้านน้ำหวานหน้าปากซอย (Sweet Drink Stall)
++
++* Archetype: Stable income
++* Role: second stable generator; introduces x10 upgrades
++* Unlock: money threshold (very small)
++
++#### B003 — ตลาดนัดติดแอร์ (Indoor Market)
++
++* Archetype: Stable income (mid early)
++* Role: first “bigger jump” in income; longer upgrade cadence
++* Unlock: B002 level gate
++
++#### B004 — ทีมกระแส (Trend Team)
++
++* Archetype: PR / Trend
++* Role: increases Trend (global multiplier) and/or reduces Trend decay
++* Unlock: money + mission completion (first daily)
++* Notes: produces little/no money directly; it boosts others
++
++#### B005 — ศูนย์เอกสารดีเด่น (Paperwork Center)
++
++* Archetype: Infrastructure
++* Role: reduces upgrade cost (global or category) OR increases offline efficiency cap
++* Unlock: B003 level gate
++* Notes: the “Thai satire friction” in a harmless, system-level way
++
++#### B006 — งานแฟร์ชุมชน (Community Fair)
++
++* Archetype: Trend-driven / Event
++* Role: high income spikes via short boosts; slightly volatile (depends on Trend)
++* Unlock: Trend threshold
++
++### 8.5 Balancing guidance for starter set
++
++* Early game should feel fast: B001/B002 upgrade cadence 5–20 seconds.
++* Introduce Trend by minute 2–5 via B004.
++* Introduce Infrastructure by minute 8–15 via B005.
++* Volatile/high-ceiling building (B006) unlocks after player understands Trend.
++
++---
++
++## 9) Map-First UX Spec (Non-negotiable)
++
++### 9.1 Map screen
++
++* Top-down grid map (6×6 to 8×8).
++* Buildings are tappable tiles sized for touch (>= ~52–64dp).
++* Locked tiles show a clear lock state.
++
++### 9.2 Interaction rules
++
++* **Tap building** → open **Bottom Sheet Building Panel** (no scene change).
++* **Close panel** → return to map instantly.
++* Optional **long-press** → quick actions (Upgrade x1/x10/Info).
++* Zoom/pan may exist but must never be required.
++
++### 9.3 Visual status cues
++
++Map must communicate at a glance:
++
++* Upgrade available: glow/pulse
++* Bottleneck/blocked: warning icon
++* Boost active: effect badge
++
++---
++
++## 10) Building Panel Spec (Bottom Sheet)
++
++### 10.1 Always present
++
++* Building name + icon
++* Level
++* Income now
++* Income after upgrade (before/after)
++* Primary CTA: **Upgrade**
++* Quantity toggle: x1 / x10 / xMAX (single row)
++
++### 10.2 Optional actions
++
++* Boost (if owned)
++* Details (advanced)
++
++### 10.3 UX limits
++
++* One dominant action.
++* No more than 2–3 secondary buttons.
++* No multi-step menus.
++
++---
++
++## 11) Navigation Structure
++
++Bottom navigation:
++
++* Map (Home)
++* Upgrade (List management)
++* Event/Missions
++* Prestige
++* Ranking
++
++Upgrade tab must support sorting:
++
++* Upgradeable
++* ROI-ish
++* Cheapest
++* Highest income
++
++---
++
++## 12) Prestige System
++
++* Resets: money, building levels.
++* Persists: prestige currency, permanent upgrades, achievements.
++
++Prestige currency formula guideline:
++
++* `prestigeGain = floor(sqrt(lifetimeEarnings / K))` (K tunable)
++
++Permanent upgrades examples:
++
++* Global multiplier
++* Auto-collect
++* Auto-upgrade priority rules
++* Reduce costs
++* Increase offline cap
++* Reduce trend decay
++
++---
++
++## 13) Rewarded Ads (Optional, No Forced Ads)
++
++* Ads are **rewarded only**.
++* Rewards:
++
++  * x2 income for 2–4 minutes
++  * Instant cash equal to 30–120 minutes of income
++  * Freeze trend decay for short period
++
++Constraints:
++
++* Daily limit and/or cooldown.
++* Game must be playable without watching ads.
++
++---
++
++## 14) Leaderboard (Seasonal)
++
++* Seasonal leaderboard (weekly default).
++* Score should not be raw money to reduce cheating.
++
++Recommended score function:
++
++* `score = f(prestigeTotal, lifetimeEarnings, achievements, seasonPoints)`
++
++Anti-cheat baseline:
++
++* authoritative server for score submission
++* anomaly detection for impossible deltas
++
++---
++
++## 15) Data Model (Config-driven)
++
++### 15.1 Config files (single source)
++
++* `economy.json`
++* `buildings.json`
++* `upgrades_permanent.json`
++* `missions.json`
++* `events.json`
++
++Config format is **JSON only** in v0.x.
++
++### 15.2 Player save
++
++Must include:
++
++* money
++* trend
++* prestigeCurrency
++* buildingLevels
++* permanentUpgrades
++* boostsActive
++* lastActiveAt
++* seasonState
++
++Save format is **JSON** (store in `user://`), with versioning and migration starting in v0.x.
++
++### 15.3 Example configs (MVP-ready)
++
++> These examples define **structure**, not final numbers. Keep all tuning in configs (no scattered magic numbers).
++
++#### `economy.json`
++
++```json
++{
++  "version": 1,
++  "pacing": {
++    "offlineCapHours": 12,
++    "offlineEfficiency": 0.70,
++    "firstUpgradeTargetSeconds": 30,
++    "firstPrestigeTargetMinutes": 120
++  },
++  "trend": {
++    "baseMultiplier": 1.0,
++    "maxMultiplier": 5.0,
++    "decayPerMinute": 0.02,
++    "minMultiplier": 0.8
++  },
++  "boosts": {
++    "incomeX2Minutes": { "durationSeconds": 180, "multiplier": 2.0 },
++    "freezeTrendDecay": { "durationSeconds": 180 }
++  },
++  "prestige": {
++    "formula": "sqrt",
++    "k": 1.0e6
++  }
++}
++```
++
++#### `buildings.json`
++
++```json
++{
++  "version": 1,
++  "grid": { "cols": 7, "rows": 7 },
++  "buildings": [
++    {
++      "id": "B001",
++      "name": "รถเข็นสารพัด",
++      "category": "stable",
++      "tile": { "x": 2, "y": 4 },
++      "cost": { "base": 15, "rate": 1.12 },
++      "output": { "basePerSec": 0.8, "rate": 1.10 },
++      "trendScaling": { "enabled": true, "weight": 1.0 },
++      "unlock": { "type": "start" }
++    },
++    {
++      "id": "B002",
++      "name": "ร้านน้ำหวานหน้าปากซอย",
++      "category": "stable",
++      "tile": { "x": 3, "y": 4 },
++      "cost": { "base": 60, "rate": 1.13 },
++      "output": { "basePerSec": 3.0, "rate": 1.11 },
++      "trendScaling": { "enabled": true, "weight": 1.0 },
++      "unlock": { "type": "money", "moneyRequired": 40 }
++    },
++    {
++      "id": "B003",
++      "name": "ตลาดนัดติดแอร์",
++      "category": "stable",
++      "tile": { "x": 4, "y": 4 },
++      "cost": { "base": 300, "rate": 1.14 },
++      "output": { "basePerSec": 14.0, "rate": 1.12 },
++      "trendScaling": { "enabled": true, "weight": 1.1 },
++      "unlock": { "type": "level", "buildingId": "B002", "levelRequired": 10 }
++    },
++    {
++      "id": "B004",
++      "name": "ทีมกระแส",
++      "category": "trend",
++      "tile": { "x": 4, "y": 3 },
++      "cost": { "base": 450, "rate": 1.15 },
++      "output": { "type": "trend", "trendPerSec": 0.003, "rate": 1.08 },
++      "unlock": { "type": "mission", "missionId": "D001" }
++    },
++    {
++      "id": "B005",
++      "name": "ศูนย์เอกสารดีเด่น",
++      "category": "infra",
++      "tile": { "x": 5, "y": 3 },
++      "cost": { "base": 900, "rate": 1.16 },
++      "output": {
++        "type": "modifier",
++        "effects": [
++          { "kind": "upgrade_cost_multiplier", "target": "all", "value": 0.995, "rate": 0.999 }
++        ]
++      },
++      "unlock": { "type": "level", "buildingId": "B003", "levelRequired": 8 }
++    },
++    {
++      "id": "B006",
++      "name": "งานแฟร์ชุมชน",
++      "category": "volatile",
++      "tile": { "x": 5, "y": 4 },
++      "cost": { "base": 1200, "rate": 1.17 },
++      "output": { "basePerSec": 40.0, "rate": 1.13 },
++      "trendScaling": { "enabled": true, "weight": 1.35 },
++      "unlock": { "type": "trend", "trendRequired": 1.2 }
++    }
++  ]
++}
++```
++
++#### `upgrades_permanent.json`
++
++```json
++{
++  "version": 1,
++  "upgrades": [
++    {
++      "id": "P001",
++      "name": "เมืองทำงานไวขึ้น",
++      "costPrestige": 5,
++      "effects": [{ "kind": "global_income_multiplier", "value": 1.10 }]
++    },
++    {
++      "id": "P002",
++      "name": "เพิ่มเพดานออฟไลน์",
++      "costPrestige": 8,
++      "effects": [{ "kind": "offline_cap_hours_add", "value": 2 }]
++    },
++    {
++      "id": "P003",
++      "name": "กระแสอยู่ได้นานขึ้น",
++      "costPrestige": 10,
++      "effects": [{ "kind": "trend_decay_multiplier", "value": 0.90 }]
++    }
++  ]
++}
++```
++
++#### `missions.json`
++
++```json
++{
++  "version": 1,
++  "daily": [
++    {
++      "id": "D001",
++      "title": "อัปเกรดร้านแรก 5 ครั้ง",
++      "type": "upgrade_count",
++      "target": { "buildingId": "B001", "count": 5 },
++      "rewards": [{ "kind": "money", "value": 100 }, { "kind": "trend", "value": 0.05 }]
++    },
++    {
++      "id": "D002",
++      "title": "ทำรายได้รวมให้ถึง 1,000",
++      "type": "lifetime_earnings",
++      "target": { "value": 1000 },
++      "rewards": [{ "kind": "boost", "boostId": "incomeX2Minutes" }]
++    },
++    {
++      "id": "D003",
++      "title": "อัปเกรดอะไรก็ได้ 10 ครั้ง",
++      "type": "upgrade_any",
++      "target": { "count": 10 },
++      "rewards": [{ "kind": "money", "value": 250 }]
++    }
++  ]
++}
++```
++
++#### `events.json` (simple weekly stub)
++
++```json
++{
++  "version": 1,
++  "events": [
++    {
++      "id": "E001",
++      "name": "สัปดาห์ของแถม",
++      "type": "seasonal",
++      "durationDays": 7,
++      "effects": [{ "kind": "global_income_multiplier", "value": 1.05 }],
++      "rewards": [{ "kind": "season_points", "value": 100 }]
++    }
++  ]
++}
++```
++
++---
++
++## 16) Telemetry (Minimum viable)
++
++Track:
++
++* session count/day
++* time to first upgrade
++* time to first prestige
++* ad watch count
++* churn indicators (days inactive)
++
++---
++
++## 17) MVP Deliverables
++
++### v0.1 (Playable Prototype)
++
++* Map grid home
++* 6 buildings
++* building panel with upgrade
++* exponential economy formula
++* offline progress
++* basic missions (3 daily)
++
++### v0.2
++
++* prestige
++* simple automation unlocks
++
++### v1.0
++
++* rewarded ads
++* seasonal leaderboard
++* 12–18 buildings
++* events
++
++---
++
++## 18) Definition of Done (DoD)
++
++A feature is done only when:
++
++* Config-driven values (no magic numbers in UI)
++* Works offline/online
++* Mobile touch targets respected
++* UI feedback is immediate
++* Save/load verified
++* Basic anti-cheat constraints considered for ranking
++
++---
++
++## 19) Collaboration Protocol
++
++* Keep this file authoritative.
++* When implementing a new system, update:
++
++  * this spec if rules change
++  * any plan/task doc used by the team
++* Prefer small, testable increments.
++
++---
++
++## 20) Open Questions (Fill later)
++
++* Final theme naming set (fictional brands)
++* Art style target (cartoon/flat/pixel)
++* Server stack for leaderboard
++* Monetization tuning (limits, cooldowns)
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/encodings.xml b/.idea/encodings.xml
+new file mode 100644
+--- /dev/null	(date 1769583690298)
++++ b/.idea/encodings.xml	(date 1769583690298)
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Encoding" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise" />
++</project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+new file mode 100644
+--- /dev/null	(date 1769584367416)
++++ b/.idea/workspace.xml	(date 1769584367416)
+@@ -0,0 +1,378 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
++  <component name="ChangeListManager">
++    <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
++      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/indexLayout.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/libraries/GdSdk.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/GdSdk.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/MOBILE_SETUP.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/SPRITES_GUIDE.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/SPRITE_TEMPLATE.md" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/.gitkeep" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_beach_coral.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_beach_coral.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_furture.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_furture.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_slider.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_building_slider.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_animal.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_animal.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_entrance.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_entrance.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_lava.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_cave_lava.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_dam.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_dam.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory_chimney.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_factory_chimney.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm_wheat.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_farm_wheat.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fishing_ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fishing_ice.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_deep.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_deep.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_haunted.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_haunted.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_hotspring.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_forest_hotspring.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fram_market.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_fram_market.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_hotel_snow.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_hotel_snow.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_iceberg.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_iceberg.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mill.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mill.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine_shaft.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mine_shaft.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_mine.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_mine.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_waterfall.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_mountain_waterfall.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_powerplant_nuclear.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_powerplant_nuclear.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_quarry.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_quarry.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant_seafood.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_restaurant_seafood.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_ice.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_sphere.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_rock_sphere.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_school.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_school.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_windmill.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_windmill.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_log.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_log.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_plank.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/building_wood_plank.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_bomb.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_bomb.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash_wing.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cash_wing.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_close.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_close.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cog.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_cog.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coin.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coin.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coins.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_coins.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_ruby.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_ruby.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_sale.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/icon_sale.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/object_mountain.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/object_mountain.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_coal_ore.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_coal_ore.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_copper.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_copper.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_corn.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_corn.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_electric.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_electric.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_ice.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_iron.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_iron.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_plank.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_plank.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_stone.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_stone.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_water.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_water.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_wood.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/product_wood.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_desert.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_desert.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_empty-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_farmland.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_farmland.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_field-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_sand-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_snow-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_volcanic-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-0.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-0.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-1.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-1.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-2.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-2.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-3.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/assets/sprites/terrain_water-3.png.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/buildings.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/buildings.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/buildings_data.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/buildings_data.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/recipes.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/recipes.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/resources.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/autoload/resources.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/icon.svg" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/icon.svg.import" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/hex_tile.tscn" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/main.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/main.tscn" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/ui/bottom_sheet.tscn" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/ui/bottom_sheet_old.tscn" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/ui/buildable_item.tscn" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scenes/ui/settings_panel.tscn" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/building_base.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/building_base.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/factory.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/factory.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/farm.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/farm.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/mine.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/mine.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/road.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/buildings/road.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/camera_controller.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/camera_controller.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/hex_tile.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/hex_tile.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/main.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/main.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/economy_manager.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/economy_manager.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/hex_grid_manager.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/hex_grid_manager.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/production_manager.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/production_manager.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/save_load_manager.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/save_load_manager.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/transport_manager.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/managers/transport_manager.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet_old.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/bottom_sheet_old.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/buildable_item.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/buildable_item.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/settings_panel.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/scripts/ui/settings_panel.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/temp_calculate_tiles.gd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/temp_calculate_tiles.gd.uid" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/.gdignore" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.afphoto" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.aftemplate" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/grid_tile.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/bomb.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/cash.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/cash_wing.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/close.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/cog.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/coin.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/coins.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/ruby.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/icon/sale.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/menu_control.txt" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/beach_coral.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/building_furture.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/building_slider.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/cave.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/cave_animal.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/cave_entrance.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/cave_lava.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/dam.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/factory.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/factory_chimney.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/farm.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/farm_wheat.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/fishing_ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/forest.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/forest_deep.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/forest_haunted.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/forest_hotspring.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/fram_market.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/hotel_snow.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/iceberg.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mill.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mine.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mine_shaft.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mountain.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mountain_mine.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/mountain_waterfall.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/powerplant_nuclear.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/quarry.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/restaurant.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/restaurant_seafood.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/rock_ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/rock_sphere.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/school.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/windmill.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/wood_log.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object/wood_plank.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/object_resize.cmd" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/coal_ore.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/copper.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/corn.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/electric.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/ice.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/iron.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/plank.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/stone.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/water.png" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/~develop/product/wood.png" beforeDir="false" />
++    </list>
++    <option name="SHOW_DIALOG" value="false" />
++    <option name="HIGHLIGHT_CONFLICTS" value="true" />
++    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
++    <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="EmbeddingIndexingInfo">
++    <option name="cachedIndexableFilesCount" value="75" />
++    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
++  </component>
++  <component name="Git.Settings">
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++  </component>
++  <component name="McpProjectServerCommands">
++    <commands />
++    <urls />
++  </component>
++  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
++  <component name="ProjectColorInfo"><![CDATA[{
++  "customColor": "",
++  "associatedIndex": 0
++}]]></component>
++  <component name="ProjectId" id="38sMBe2nS0F9ME7hop40dD1f30k" />
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ModuleVcsDetector.initialDetectionPerformed": "true",
++    "RunOnceActivity.MCP Project settings loaded": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
++    "RunOnceActivity.git.unshallow": "true",
++    "git-widget-placeholder": "main",
++    "settings.editor.selected.configurable": "settings.sync"
++  }
++}]]></component>
++  <component name="RecapSpentCounter">
++    <option name="endsOfQuotaMs" value="1771556410856" />
++    <option name="spentUsd" value="0.0031083" />
++  </component>
++  <component name="RecapUselessUpdatesCounter">
++    <option name="suspendCountdown" value="9" />
++  </component>
++  <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="" />
++      <created>1769583692407</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1769583692407</updated>
++    </task>
++    <servers />
++  </component>
++  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
++  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
++  <component name="VcsManagerConfiguration">
++    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <breakpoints>
++        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
++          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
++          <option name="timeStamp" value="1" />
++        </breakpoint>
++        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
++          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
++          <option name="timeStamp" value="2" />
++        </breakpoint>
++        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
++          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
++          <option name="timeStamp" value="3" />
++        </breakpoint>
++      </breakpoints>
++    </breakpoint-manager>
++  </component>
++</project>
+\ No newline at end of file
+Index: docs/AI_PLAN.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/AI_PLAN.md b/docs/AI_PLAN.md
+new file mode 100644
+--- /dev/null	(date 1769566172115)
++++ b/docs/AI_PLAN.md	(date 1769566172115)
+@@ -0,0 +1,145 @@
++# AI_PLAN.md
++
++> Source of truth: AI_SPEC.md. This plan decomposes the v0.1 MVP only.
++
++---
++
++## 1) Milestones (v0.1 only)
++
++| Milestone | Goal | Primary Output |
++|---|---|---|
++| M1 | Foundations + Data Contracts | Core data schemas, save/load skeleton, config parsing contracts |
++| M2 | Economy Core + Offline Progress | Deterministic economy math, trend decay, offline earnings |
++| M3 | Map-First UX | Map grid, tile states, tap/long-press, bottom-sheet host |
++| M4 | Building Panel + Upgrades | Building panel UI, upgrade quantities, validation/errors |
++| M5 | Missions (3 Daily) + Telemetry (Minimum) | Basic mission tracking/rewards, minimal telemetry events |
++
++---
++
++## 2) Milestone Scopes
++
++### M1: Foundations + Data Contracts
++
++**IN**
++- Canonical schemas and versioning rules (see DATA_SCHEMA.md)
++- Config loading contracts for economy/buildings/missions/events
++- Save container structure and integrity checks (no runtime loader code in this plan)
++- Deterministic time source contract (real-time seconds)
++
++**OUT**
++- Any UI implementation
++- Any live economy tick logic
++- Prestige, leaderboard, ads, events runtime
++
++### M2: Economy Core + Offline Progress
++
++**IN**
++- Formal formulas and trend decay model (see ECONOMY_SPEC.md)
++- Offline progress algorithm (time-based, clamped)
++- Large-number policy, rounding, and determinism rules
++- Unit test plan (spec-level) for formula correctness
++
++**OUT**
++- Automation systems
++- Prestige loop (v0.2)
++- Ad-based boosts (v1.0)
++
++### M3: Map-First UX
++
++**IN**
++- Top-down grid sizing and placement rules
++- Tile states: locked/available/upgradeable/blocked/boosted
++- Tap and optional long-press semantics (no scene switches)
++- Bottom-sheet host container (anchored Control)
++- Safe-area handling and touch target minimums
++
++**OUT**
++- Upgrade list tab
++- Ranking, prestige, events screens
++
++### M4: Building Panel + Upgrades
++
++**IN**
++- Building panel fields, layout order, CTA rules
++- Upgrade quantity toggles: x1 / x10 / xMAX
++- Before/after income presentation rules
++- Error states: not enough money, locked, cooldown
++- Basic boost slot if defined in config
++
++**OUT**
++- Advanced detail screens
++- Multi-step menus
++
++### M5: Missions (3 Daily) + Telemetry (Minimum)
++
++**IN**
++- Daily missions tracking (3) and reward claims
++- Mission gating for building unlocks
++- Telemetry events defined in AI_SPEC.md (session count, time-to-first-upgrade/prestige, etc.)
++
++**OUT**
++- Seasonal leaderboard submission
++- Ad watch events and rewards
++
++---
++
++## 3) System Dependencies
++
++- **Data Contracts (M1)** -> required by **Economy (M2)** and **Map/Panel (M3/M4)**
++- **Economy (M2)** -> required by **Panel Upgrade UI (M4)** and **Mission targets (M5)**
++- **Map UX (M3)** -> required by **Panel (M4)** for navigation and state cues
++- **Missions (M5)** -> required by **Building unlock rules** (see AI_SPEC.md and DATA_SCHEMA.md)
++
++ASCII dependency view:
++
++```
++M1 -> M2 -> M4
++  \\-> M3 --/
++      \\-> M5
++```
++
++---
++
++## 4) Validation Criteria (Definition of Done per Milestone)
++
++### M1 Completion
++- Schemas defined for PlayerState, Building, Mission, Event
++- Versioning and migration rules documented
++- Save integrity rules defined (checksums/validation)
++- No contradictions with AI_SPEC.md
++
++### M2 Completion
++- Economy formulas are fully specified and deterministic
++- Trend decay model is time-based (not frame-based)
++- Offline progress algorithm is step-by-step and clamped to cap
++- Large-number precision policy is specified
++
++### M3 Completion
++- Map grid rules and placement constraints specified
++- Interaction rules (tap/long-press/disabled) are explicit
++- Visual indicators defined for upgradeable/blocked/boosted
++- Bottom-sheet host behavior defined (no scene switch)
++- Safe-area and touch-target constraints documented
++
++### M4 Completion
++- Building panel fields and layout order specified
++- Upgrade flow defined for x1/x10/xMAX
++- Before/after income rules stated and unambiguous
++- Error states and messaging behavior documented
++
++### M5 Completion
++- Mission schema and examples match AI_SPEC.md constraints
++- Reward claims and gating rules documented
++- Telemetry event list and definitions provided
++
++---
++
++## 5) Risks & Mitigations (v0.1)
++
++- **Risk:** Economy math ambiguity leads to tuning drift.
++  - **Mitigation:** Central formula definitions in ECONOMY_SPEC.md; no ad-hoc math in UI.
++- **Risk:** Offline progress inconsistent across devices.
++  - **Mitigation:** Deterministic inputs only; elapsed time computed once per resume.
++- **Risk:** UI complexity increases scene switching.
++  - **Mitigation:** Bottom-sheet panel as anchored Control, map remains active.
++
+Index: docs/DATA_SCHEMA.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/DATA_SCHEMA.md b/docs/DATA_SCHEMA.md
+new file mode 100644
+--- /dev/null	(date 1769566150518)
++++ b/docs/DATA_SCHEMA.md	(date 1769566150518)
+@@ -0,0 +1,200 @@
++# DATA_SCHEMA.md
++
++> Source of truth: AI_SPEC.md. This document defines canonical data contracts for v0.1.
++
++---
++
++## 1) Versioning & Migration Rules
++
++- Every config and save file includes a `version` integer.
++- Version increments are additive; fields may be added but not removed without migration.
++- Migration rules:
++  - `version + 1` migrations are allowed only if data can be derived or defaulted.
++  - Unknown fields must be preserved when reading and writing (forward compatibility).
++  - Missing fields must be defaulted to safe values documented here.
++
++---
++
++## 2) Save Integrity Rules
++
++- Save payload must include:
++  - `saveVersion`
++  - `checksum` over canonicalized JSON (sorted keys, no whitespace)
++  - `createdAt` and `updatedAt` UTC timestamps
++- On load:
++  - If checksum fails, load last known good backup.
++  - If no backup, reset to new-game state.
++
++---
++
++## 3) PlayerState Schema
++
++### 3.1 Required Fields
++
++| Field | Type | Description |
++|---|---|---|
++| saveVersion | int | Player save schema version |
++| money | BigNumber | Current money |
++| trend | float | Current trend multiplier |
++| prestigeCurrency | int | Permanent currency |
++| buildingLevels | map<string,int> | Building id -> level |
++| permanentUpgrades | list<string> | Purchased permanent upgrade ids |
++| boostsActive | list<BoostState> | Active temporary boosts |
++| lastActiveAt | string | UTC timestamp ISO-8601 |
++| seasonState | SeasonState | Current season summary |
++| missions | MissionState | Daily mission progress |
++
++### 3.2 BigNumber Representation
++
++```
++{
++  "mantissa": 1.234567,
++  "exponent": 6
++}
++```
++
++### 3.3 PlayerState Example (JSON)
++
++```json
++{
++  "saveVersion": 1,
++  "money": { "mantissa": 3.42, "exponent": 4 },
++  "trend": 1.15,
++  "prestigeCurrency": 0,
++  "buildingLevels": {
++    "B001": 12,
++    "B002": 8
++  },
++  "permanentUpgrades": [],
++  "boostsActive": [],
++  "lastActiveAt": "2026-01-28T12:00:00Z",
++  "seasonState": {
++    "seasonId": "S001",
++    "seasonPoints": 0,
++    "endsAt": "2026-02-04T00:00:00Z"
++  },
++  "missions": {
++    "daily": {
++      "D001": { "progress": 3, "claimed": false },
++      "D002": { "progress": 0, "claimed": false },
++      "D003": { "progress": 10, "claimed": true }
++    },
++    "lastDailyResetAt": "2026-01-28T00:00:00Z"
++  },
++  "createdAt": "2026-01-28T11:00:00Z",
++  "updatedAt": "2026-01-28T12:00:00Z",
++  "checksum": "sha256:..."
++}
++```
++
++---
++
++## 4) Building Definition Schema
++
++### 4.1 Building Object
++
++| Field | Type | Description |
++|---|---|---|
++| id | string | Unique building id (e.g., B001) |
++| name | string | Display name (Thai allowed) |
++| category | enum | stable, trend, infra, volatile |
++| tile | object | `x`, `y` grid coordinates |
++| cost | object | `base`, `rate` |
++| output | object | money or modifier output |
++| trendScaling | object | `enabled`, `weight` |
++| unlock | object | unlock rule |
++
++### 4.2 Output Variants
++
++- Money output:
++  - `{ "basePerSec": number, "rate": number }`
++- Trend output:
++  - `{ "type": "trend", "trendPerSec": number, "rate": number }`
++- Modifier output:
++  - `{ "type": "modifier", "effects": [ { kind, target, value, rate? } ] }`
++
++### 4.3 Building Example (JSON)
++
++```json
++{
++  "id": "B001",
++  "name": "ExampleStreetCart",
++  "category": "stable",
++  "tile": { "x": 2, "y": 4 },
++  "cost": { "base": 15, "rate": 1.12 },
++  "output": { "basePerSec": 0.8, "rate": 1.10 },
++  "trendScaling": { "enabled": true, "weight": 1.0 },
++  "unlock": { "type": "start" }
++}
++```
++
++---
++
++## 5) Mission Schema
++
++### 5.1 Mission Definition
++
++| Field | Type | Description |
++|---|---|---|
++| id | string | Unique mission id |
++| title | string | Player-facing text (Thai allowed) |
++| type | enum | upgrade_count, upgrade_any, lifetime_earnings |
++| target | object | Type-specific target data |
++| rewards | list<object> | Rewards granted on completion |
++
++### 5.2 Mission Progress State
++
++```
++{
++  "progress": number,
++  "claimed": boolean
++}
++```
++
++---
++
++## 6) Event Schema
++
++### 6.1 Event Definition
++
++| Field | Type | Description |
++|---|---|---|
++| id | string | Event id |
++| name | string | Display name |
++| type | enum | seasonal |
++| durationDays | int | Event duration |
++| effects | list<object> | Temporary global effects |
++| rewards | list<object> | Rewards for participation |
++
++---
++
++## 7) SeasonState Schema
++
++```
++{
++  "seasonId": "S001",
++  "seasonPoints": 0,
++  "endsAt": "2026-02-04T00:00:00Z"
++}
++```
++
++---
++
++## 8) BoostState Schema
++
++```
++{
++  "boostId": "incomeX2Minutes",
++  "expiresAt": "2026-01-28T12:03:00Z",
++  "source": "mission"
++}
++```
++
++---
++
++## 9) Cross-Reference
++
++- Economy math and BigNumber policy: ECONOMY_SPEC.md
++- UX-driven requirements: UI_SPEC_MAP.md and UI_SPEC_BUILDING_PANEL.md
++- Non-goals and constraints: AI_SPEC.md
++
+Index: docs/ECONOMY_SPEC.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/ECONOMY_SPEC.md b/docs/ECONOMY_SPEC.md
+new file mode 100644
+--- /dev/null	(date 1769566179581)
++++ b/docs/ECONOMY_SPEC.md	(date 1769566179581)
+@@ -0,0 +1,165 @@
++# ECONOMY_SPEC.md
++
++> Source of truth: AI_SPEC.md. This document defines formal economy math for v0.1.
++
++---
++
++## 1) Core Definitions
++
++Let:
++
++- `level` = integer building level (>= 0)
++- `baseCost`, `costRate` from config
++- `baseOutput`, `outputRate` from config
++- `trendMultiplier` = global multiplier (>= minMultiplier)
++- `globalBonus` = product of global multipliers (prestige, infra, etc.)
++- `boosts` = product of temporary multipliers (if active)
++
++### 1.1 Building Upgrade Cost
++
++```
++cost(level) = baseCost * (costRate ^ level)
++```
++
++### 1.2 Building Output
++
++```
++output(level) = baseOutput * (outputRate ^ level)
++```
++
++### 1.3 Global Income Per Second
++
++```
++incomePerSec = sum(output(building_i)) * trendMultiplier * globalBonus * boosts
++```
++
++Notes:
++- `output` for non-money buildings may be trend gain or modifiers; those apply via `globalBonus` or trend rules.
++
++---
++
++## 2) Trend Decay Model (Time-Based)
++
++Trend is a global multiplier with decay defined in config:
++
++- `decayPerMinute` (e.g., 0.02)
++- `minMultiplier`
++- `maxMultiplier`
++
++### 2.1 Decay Formula (Exponential)
++
++Given current trend at time `t0`, after elapsed minutes `m`:
++
++```
++trend(t0 + m) = max(minMultiplier, trend(t0) * (1 - decayPerMinute) ^ m)
++```
++
++Rules:
++- Trend is clamped to `[minMultiplier, maxMultiplier]` after any update.
++- Decay is calculated from elapsed real time, not per frame.
++
++---
++
++## 3) Trend Gain (from Trend Buildings)
++
++If a building has `output.type = "trend"`:
++
++```
++trendGainPerSec(level) = baseTrendPerSec * (rate ^ level)
++```
++
++Trend update step (per economy evaluation interval):
++
++```
++trend = clamp(trend + trendGainPerSec * deltaSeconds, minMultiplier, maxMultiplier)
++```
++
++Notes:
++- Trend gain must be applied using time deltas, not per-frame ticks.
++
++---
++
++## 4) Offline Progress Algorithm (v0.1)
++
++### 4.1 Inputs
++
++- `lastActiveAt` (UTC timestamp)
++- `now` (UTC timestamp at resume)
++- `offlineCapSeconds` (from config)
++- `offlineEfficiency` (from config)
++- Current `PlayerState` (money, trend, building levels, boosts)
++
++### 4.2 Step-by-Step Algorithm
++
++1) Compute elapsed time:
++   - `elapsed = clamp(now - lastActiveAt, 0, offlineCapSeconds)`
++2) If `elapsed == 0`, exit.
++3) Determine segment boundaries:
++   - `t=0`
++   - boost expiry times (if active at logout)
++   - time when trend reaches `minMultiplier` (if it will)
++4) For each segment `[t_i, t_{i+1}]`:
++   - Compute trend multiplier at segment start using decay formula.
++   - Compute effective income per second for the segment.
++   - Accumulate earnings:
++     - `segmentEarnings = incomePerSec * (t_{i+1} - t_i)`
++5) Total offline earnings = sum of segment earnings.
++6) Apply efficiency:
++   - `offlineEarnings = totalEarnings * offlineEfficiency`
++7) Add to money; update trend to its value at `elapsed`.
++8) Record `lastActiveAt = now`.
++9) Show a one-time offline summary modal.
++
++### 4.3 Deterministic Segmenting
++
++- Use only deterministic events (boost expiration, trend floor).
++- If no events occur, use a single segment for the full elapsed time.
++- Do not use frame-based or variable step sizes.
++
++---
++
++## 5) Precision & Large-Number Handling
++
++### 5.1 Internal Representation
++
++- Use a scientific notation pair `(mantissa, exponent)` in base-10:
++  - `value = mantissa * 10^exponent`
++  - `mantissa` is in `[1, 10)` or `0`.
++- This representation is used for money and income values.
++
++### 5.2 Operations
++
++- Addition: align exponents, add mantissas, normalize to `[1,10)`.
++- Multiplication: multiply mantissas, add exponents, normalize.
++- Division: divide mantissas, subtract exponents, normalize.
++
++### 5.3 Rounding Policy
++
++- Normalize after every operation.
++- Round mantissa to 6 decimal places after normalization.
++- Display rounding is separate from internal rounding.
++
++### 5.4 Display Formatting
++
++- Display uses SI-like suffixes (K, M, B, T, Qa, Qi) or scientific notation beyond Qi.
++- Formatting must not alter internal stored values.
++
++---
++
++## 6) Determinism Rules
++
++- Same inputs produce the same outputs across devices.
++- Use UTC timestamps only; no locale-dependent formats.
++- All formulas are pure functions of config + state + elapsed time.
++- Clamp all values explicitly (trend min/max, offline cap).
++- Do not use random values in core economy calculations.
++
++---
++
++## 7) Validation Checklist (v0.1)
++
++- Formula outputs match AI_SPEC.md definitions.
++- Trend decay uses real time, not frame counts.
++- Offline progress equals online earnings at 70% efficiency for same elapsed time.
++- Large-number formatting is consistent and stable.
++
+Index: docs/PIXEL_ART_SPEC.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/PIXEL_ART_SPEC.md b/docs/PIXEL_ART_SPEC.md
+new file mode 100644
+--- /dev/null	(date 1769575414845)
++++ b/docs/PIXEL_ART_SPEC.md	(date 1769575414845)
+@@ -0,0 +1,138 @@
++# PIXEL_ART_SPEC.md
++
++> Subordinate to AI_SPEC.md. If any conflict exists, AI_SPEC.md overrides this document.
++
++---
++
++## 1) Scope & Purpose
++
++**Controls**
++- All 2D pixel art assets used in-game, including buildings, terrain, UI map icons, and effects sprites.
++- Authoring rules, palette rules, lighting rules, and file naming rules for pixel art.
++
++**Does NOT control**
++- Non-pixel UI layout, typography, or UX behavior.
++- Audio, VFX particles, or 3D assets.
++- Economy rules, balancing, or gameplay logic.
++
++---
++
++## 2) Canvas & Scaling Rules
++
++- Authoring resolution MUST be exactly 32x32 px per tile/sprite.
++- In-game rendering MUST use integer scaling only.
++- Allowed scales: 2x (64x64), 3x (96x96), 4x (128x128).
++- The same asset MUST NOT be rendered at non-integer scale.
++- Rotation and skewing MUST NOT be used on pixel art sprites.
++- Sub-pixel positioning MUST NOT be used; positions must land on whole pixels after scaling.
++
++---
++
++## 3) Perspective & Composition
++
++- Camera perspective MUST be top-down 3/4.
++- Roof-to-wall ratio MUST be 60% roof / 40% wall height within the 32x32 box.
++- Buildings MUST read clearly from the map at 2x scale.
++- Silhouettes MUST be distinguishable by shape alone at 64x64.
++- Avoid extreme foreshortening; top surfaces must be visible but not dominant.
++
++---
++
++## 4) Color & Palette Policy
++
++- Maximum colors per sprite: 12 (including outline and highlights).
++- Saturation must be moderate; no fully saturated neon colors.
++- Accent colors MUST be limited to 1 per sprite and occupy <= 10% of pixels.
++- Forbidden colors:
++  - Pure white (#FFFFFF) and pure black (#000000) for large fills.
++  - Fully transparent internal holes unless intentional cutouts.
++- Use consistent hue families for a building set to prevent visual noise.
++
++---
++
++## 5) Lighting & Outline Rules
++
++- Light direction MUST be from top-left.
++- Shadows MUST fall to bottom-right.
++- Outlines MUST be 1px and use a darker shade of the local color, not pure black.
++- Highlighting MUST be done with one lighter shade per material.
++- Avoid heavy dithering; use flat clusters with clean edges.
++
++---
++
++## 6) Detail Density Rules
++
++- Details MUST be readable at 2x scale without zoom.
++- Use 1-2 pixel highlights to imply materials; do not draw micro-text.
++- Large surfaces MUST be broken with at most 2 simple features (e.g., door + sign).
++- MUST NOT use:
++  - Single-pixel noise patterns
++  - Text smaller than 4x4 px
++  - Subtle gradients or banded dithering
++  - Thin lines less than 1px (anti-aliased lines)
++
++---
++
++## 7) Animation Rules (Optional Assets)
++
++- Allowed frame counts: 2, 4, or 6 frames.
++- Idle animations MAY include:
++  - Light flicker
++  - Small sign blink
++  - Simple bob (1px vertical shift)
++- Animation timing:
++  - 2 frames: 400-600ms per frame
++  - 4 frames: 150-250ms per frame
++  - 6 frames: 100-180ms per frame
++- Animation MUST loop seamlessly with no sudden jumps.
++
++---
++
++## 8) Terrain & Map Tile Rules
++
++- Terrain tiles MUST be 32x32 and tile seamlessly on all edges.
++- Terrain MUST be lower-contrast than buildings to keep buildings readable.
++- Building base pixels MUST not blend into terrain; use a 1px separation outline or shadow.
++- Avoid high-frequency patterns that cause shimmering at 2x scale.
++
++---
++
++## 9) File Naming & Folder Structure
++
++Canonical layout (relative to project root):
++
++```
++assets/
++  pixel/
++    buildings/
++    terrain/
++    ui/
++    effects/
++```
++
++File naming rules:
++- Lowercase, snake_case, no spaces.
++- Building sprites MUST map to building IDs:
++  - `assets/pixel/buildings/b001.png`
++  - `assets/pixel/buildings/b001_idle_4f.png` (optional animation)
++- Terrain tiles MUST follow:
++  - `assets/pixel/terrain/terrain_grass.png`
++  - `assets/pixel/terrain/terrain_road.png`
++- UI map icons MUST follow:
++  - `assets/pixel/ui/icon_upgradeable.png`
++
++---
++
++## 10) Quality Acceptance Checklist
++
++An asset is accepted only if ALL are true:
++
++- 32x32 authoring size; integer scaling only.
++- Top-down 3/4 perspective with 60/40 roof-to-wall ratio.
++- <= 12 colors and <= 1 accent color (<= 10% coverage).
++- Light direction top-left; 1px local-color outlines.
++- Silhouette readable at 64x64.
++- No forbidden detail types (noise, tiny text, anti-aliased lines).
++- File name matches naming rules and building ID mapping.
++- Terrain tiles seamlessly on all edges (if terrain).
++
+Index: docs/UI_SPEC_BUILDING_PANEL.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/UI_SPEC_BUILDING_PANEL.md b/docs/UI_SPEC_BUILDING_PANEL.md
+new file mode 100644
+--- /dev/null	(date 1769566176877)
++++ b/docs/UI_SPEC_BUILDING_PANEL.md	(date 1769566176877)
+@@ -0,0 +1,131 @@
++# UI_SPEC_BUILDING_PANEL.md
++
++> Source of truth: AI_SPEC.md. This document specifies the v0.1 building bottom-sheet panel.
++
++---
++
++## 1) Panel Purpose
++
++- Show building info and enable upgrades from the map screen.
++- One dominant action: Upgrade.
++- No scene changes; panel is a Control-based bottom sheet.
++
++---
++
++## 2) Mandatory Fields (Layout Order)
++
++Top to bottom order (single-column, left-aligned):
++
++1) Header
++   - Building icon
++   - Building name
++   - Level display
++2) Primary Metrics
++   - Current income per second
++   - Trend multiplier (if applicable to building)
++3) Upgrade Impact (Before/After)
++   - Current income and projected income after upgrade quantity
++4) Quantity Toggle Row
++   - x1 / x10 / xMAX
++5) Primary CTA
++   - Upgrade button (dominant)
++6) Secondary Actions (optional)
++   - Boost (if available)
++   - Details (optional; not required in v0.1)
++
++Notes:
++- All numeric values are derived from config-driven formulas.
++- The panel must fit within 60% screen height at default open; scroll if needed.
++
++---
++
++## 3) Upgrade Flow (x1 / x10 / xMAX)
++
++### 3.1 Quantity Toggle Rules
++
++- Default selection: x1 on first open.
++- x10 is enabled only if at least 10 levels are purchasable for that building.
++- xMAX computes the maximum affordable levels based on current money and cost formula.
++- If xMAX = 0, disable the CTA and show a not-enough-money state.
++
++### 3.2 CTA Behavior
++
++- CTA text uses quantity label: "Upgrade x1", "Upgrade x10", "Upgrade xMAX".
++- On tap:
++  - Validate unlock state and cooldown.
++  - Validate affordability for selected quantity.
++  - If valid, apply upgrade, update income, and refresh panel values.
++
++### 3.3 Cost Display
++
++- Show the total cost for the selected quantity.
++- Cost must update immediately when toggling quantity.
++
++---
++
++## 4) Before/After Income Presentation
++
++- Show current income per second.
++- Show projected income per second after applying selected quantity.
++- If the building is a non-money producer (e.g., trend or modifiers), show the affected stat instead:
++  - Trend gain per second
++  - Upgrade cost multiplier
++  - Offline efficiency bonus
++
++Example (player-facing text):
++
++- Current: "Income now 12.5 /sec"
++- After:   "After upgrade 18.7 /sec"
++
++---
++
++## 5) Error States
++
++### 5.1 Not Enough Money
++
++- CTA disabled, with inline message:
++  - Example: "Not enough money"
++- Cost remains visible.
++
++### 5.2 Locked Building
++
++- Panel does not open for locked tiles.
++- If opened via edge case, show locked banner:
++  - Example: "Locked"
++
++### 5.3 Cooldown Active (if any in config)
++
++- CTA disabled with remaining time indicator.
++  - Example: "Cooldown 00:20"
++
++---
++
++## 6) Accessibility & Mobile Ergonomics
++
++- Minimum button height: 52 dp.
++- Primary CTA anchored to lower 40% of the panel.
++- Quantity toggles are segmented buttons with clear active state.
++- Text must wrap and scale without truncating key numbers.
++- Support safe-area padding at bottom for iOS home indicator.
++
++---
++
++## 7) Panel State Machine
++
++```
++[Closed] --tap building--> [Open]
++[Open] --upgrade--> [Open + Refresh]
++[Open] --close--> [Closed]
++```
++
++- Refresh updates cost, income, and status indicators instantly.
++- Errors do not close the panel.
++
++---
++
++## 8) Cross-Reference
++
++- Map interactions and bottom sheet host: UI_SPEC_MAP.md
++- Economy formulas: ECONOMY_SPEC.md
++- Data-driven building attributes: DATA_SCHEMA.md
++
+Index: docs/UI_SPEC_MAP.md
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docs/UI_SPEC_MAP.md b/docs/UI_SPEC_MAP.md
+new file mode 100644
+--- /dev/null	(date 1769566064661)
++++ b/docs/UI_SPEC_MAP.md	(date 1769566064661)
+@@ -0,0 +1,137 @@
++# UI_SPEC_MAP.md
++
++> Source of truth: AI_SPEC.md. This document specifies the Map-first UX for v0.1.
++
++---
++
++## 1) Map Screen Purpose
++
++- The map is the primary context and selector.
++- All building management occurs via a bottom-sheet panel anchored on the map screen.
++- No scene switching on building tap.
++
++---
++
++## 2) Grid Rules
++
++### 2.1 Grid Size and Coordinates
++
++- Grid dimensions must be configurable and match `buildings.json` grid size.
++- v0.1 target: 6x6 to 8x8 (AI_SPEC.md baseline). Default grid is the config value.
++- Coordinate origin: (0,0) at top-left; x increases right, y increases down.
++- Each building occupies one tile.
++
++ASCII layout example (7x7):
++
++```
++(0,0) -----------------> x
++ |
++ |
++ v y
++```
++
++### 2.2 Tile Placement Rules
++
++- Each building definition contains a fixed `tile` coordinate.
++- Empty tiles are allowed and render as inactive terrain.
++- Locked buildings still occupy their tile but are non-interactive.
++- Overlap is invalid; validation must reject duplicate coordinates.
++
++### 2.3 Unlock Behavior on Map
++
++- Locked tiles show a lock overlay and muted art.
++- Unlock triggers are soft gates only (money/trend/level/mission).
++- Once unlocked, the tile is interactive and updates to normal art state.
++
++---
++
++## 3) Interactions
++
++### 3.1 Tap
++
++- Tap on an unlocked building tile opens the bottom-sheet building panel.
++- Tapping outside the bottom sheet closes it (if open).
++- Tapping a locked tile shows a brief lock tooltip (non-blocking) and no panel.
++
++### 3.2 Long-Press (Optional)
++
++- Long-press on an unlocked building triggers quick actions (Upgrade x1/x10/Info).
++- If long-press is not implemented, the system must still be fully usable via tap.
++
++### 3.3 Disabled States
++
++- Disabled state examples: locked building, cooldown active, insufficient money.
++- Disabled buildings do not open the panel and must show a clear visual state.
++
++---
++
++## 4) Visual State Indicators (Map Level)
++
++The map must convey state at a glance. Minimum indicators:
++
++- **Upgradeable:** glow or pulse outline; indicates enough money for x1 upgrade.
++- **Blocked:** warning badge; indicates upgrade blocked by lock/cooldown/gate.
++- **Boosted:** effect badge or icon; indicates a temporary boost is active.
++
++Rules:
++- Indicators must not overlap in a way that hides lock or boost state.
++- Priority order (highest to lowest): locked > boosted > blocked > upgradeable.
++
++---
++
++## 5) Bottom-Sheet Host Behavior (Map Screen)
++
++- Implemented as a Control-based UI panel anchored to the bottom of the map screen.
++- The map remains active beneath the panel (no scene change).
++- The panel receives focus and input capture while open.
++
++### 5.1 Open/Close
++
++- Open on building tap.
++- Close on:
++  - Tap outside panel,
++  - Swipe down gesture on panel,
++  - Dedicated close button.
++
++### 5.2 Heights
++
++- Collapsed: hidden (off-screen) state.
++- Default open: 60% of screen height.
++- Maximum: 85% of screen height (for long content).
++
++### 5.3 Transitions
++
++- Use a single easing curve; duration target 180-240ms.
++- Opening and closing must be symmetrical and not block input longer than the duration.
++
++---
++
++## 6) Mobile Touch Constraints (Godot Control-based UI)
++
++- Minimum tap target: 52-64 dp equivalent.
++- One-hand reachable: primary CTA within lower 60% of screen.
++- Safe-area compliance required for all Controls (top and bottom).
++- The bottom sheet must inset above system gesture areas on iOS/Android.
++- Do not rely on multi-touch gestures to access core actions.
++
++---
++
++## 7) Map UI States (State Machine)
++
++```
++[MapIdle] --tap unlocked--> [PanelOpen]
++[MapIdle] --tap locked-->   [MapIdle + LockTooltip]
++[PanelOpen] --close-->      [MapIdle]
++```
++
++- PanelOpen state captures input for the bottom sheet.
++- MapIdle state accepts taps/long-press on tiles.
++
++---
++
++## 8) Cross-Reference
++
++- Building panel content and rules: UI_SPEC_BUILDING_PANEL.md
++- Economy-driven state cues: ECONOMY_SPEC.md
++- Data-driven tile placement: DATA_SCHEMA.md
++
+Index: .idea/projectSettingsUpdater.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/projectSettingsUpdater.xml b/.idea/projectSettingsUpdater.xml
+new file mode 100644
+--- /dev/null	(date 1769583709338)
++++ b/.idea/projectSettingsUpdater.xml	(date 1769583709338)
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RiderProjectSettingsUpdater">
++    <option name="singleClickDiffPreview" value="1" />
++    <option name="unhandledExceptionsIgnoreList" value="1" />
++    <option name="vcsConfiguration" value="3" />
++  </component>
++</project>
+\ No newline at end of file
+Index: scenes/welcome.tscn
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/scenes/welcome.tscn b/scenes/welcome.tscn
+new file mode 100644
+--- /dev/null	(date 1769583341991)
++++ b/scenes/welcome.tscn	(date 1769583341991)
+@@ -0,0 +1,54 @@
++[gd_scene load_steps=3 format=3]
++
++[ext_resource type="Script" path="res://scripts/welcome.gd" id=1]
++[ext_resource type="Texture2D" path="res://assets/logo.png" id=2]
++
++[node name="Welcome" type="Control"]
++anchor_left = 0.0
++anchor_top = 0.0
++anchor_right = 1.0
++anchor_bottom = 1.0
++offset_left = 0.0
++offset_top = 0.0
++offset_right = 0.0
++offset_bottom = 0.0
++script = ExtResource(1)
++
++[node name="Background" type="ColorRect" parent="."]
++anchor_left = 0.0
++anchor_top = 0.0
++anchor_right = 1.0
++anchor_bottom = 1.0
++offset_left = 0.0
++offset_top = 0.0
++offset_right = 0.0
++offset_bottom = 0.0
++color = Color(0.1, 0.55, 0.95, 1)
++
++[node name="Center" type="CenterContainer" parent="."]
++anchor_left = 0.0
++anchor_top = 0.0
++anchor_right = 1.0
++anchor_bottom = 1.0
++offset_left = 0.0
++offset_top = 0.0
++offset_right = 0.0
++offset_bottom = 0.0
++
++[node name="VBox" type="VBoxContainer" parent="Center"]
++alignment = 1
++size_flags_horizontal = 4
++size_flags_vertical = 4
++
++[node name="Logo" type="TextureRect" parent="Center/VBox"]
++texture = ExtResource(2)
++custom_minimum_size = Vector2(256, 256)
++expand_mode = 1
++stretch_mode = 6
++size_flags_horizontal = 4
++size_flags_vertical = 4
++
++[node name="Title" type="Label" parent="Center/VBox"]
++text = "IDLEDOT"
++alignment = 1
++size_flags_horizontal = 4
