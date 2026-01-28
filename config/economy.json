@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "pacing": {
+    "offlineCapHours": 12,
+    "offlineEfficiency": 0.7,
+    "firstUpgradeTargetSeconds": 30,
+    "firstPrestigeTargetMinutes": 120
+  },
+  "trend": {
+    "baseMultiplier": 1.0,
+    "maxMultiplier": 5.0,
+    "decayPerMinute": 0.02,
+    "minMultiplier": 0.8
+  },
+  "boosts": {
+    "incomeX2Minutes": { "durationSeconds": 180, "multiplier": 2.0 },
+    "freezeTrendDecay": { "durationSeconds": 180 }
+  },
+  "prestige": {
+    "formula": "sqrt",
+    "k": 1000000
+  }
+}

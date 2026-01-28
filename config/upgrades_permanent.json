@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "upgrades": [
+    {
+      "id": "P001",
+      "name": "City Works Faster",
+      "costPrestige": 5,
+      "effects": [{ "kind": "global_income_multiplier", "value": 1.1 }]
+    },
+    {
+      "id": "P002",
+      "name": "More Offline Cap",
+      "costPrestige": 8,
+      "effects": [{ "kind": "offline_cap_hours_add", "value": 2 }]
+    },
+    {
+      "id": "P003",
+      "name": "Trend Lasts Longer",
+      "costPrestige": 10,
+      "effects": [{ "kind": "trend_decay_multiplier", "value": 0.9 }]
+    }
+  ]
+}

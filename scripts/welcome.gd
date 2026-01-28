@@ -1,4 +1,4 @@
-﻿extends Control
+extends Control
 
 @export var next_scene_path: String = "res://scenes/main.tscn"
 @export var auto_advance_seconds: float = 1.5
@@ -6,6 +6,7 @@
 var _advanced := false
 
 func _ready() -> void:
+	_apply_theme()
 	if auto_advance_seconds > 0.0:
 		_advance_after_delay()
 
@@ -28,3 +29,7 @@ func _advance() -> void:
 	if next_scene_path.is_empty():
 		return
 	get_tree().change_scene_to_file(next_scene_path)
+
+func _apply_theme() -> void:
+	var theme = ThemeHelper.build_theme()
+	self.theme = theme

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "daily": [
+    {
+      "id": "D001",
+      "title": "Upgrade the first shop 5 times",
+      "type": "upgrade_count",
+      "target": { "buildingId": "B001", "count": 5 },
+      "rewards": [
+        { "kind": "money", "value": 100 },
+        { "kind": "trend", "value": 0.05 }
+      ]
+    },
+    {
+      "id": "D002",
+      "title": "Reach total earnings of 1,000",
+      "type": "lifetime_earnings",
+      "target": { "value": 1000 },
+      "rewards": [{ "kind": "boost", "boostId": "incomeX2Minutes" }]
+    },
+    {
+      "id": "D003",
+      "title": "Upgrade anything 10 times",
+      "type": "upgrade_any",
+      "target": { "count": 10 },
+      "rewards": [{ "kind": "money", "value": 250 }]
+    }
+  ]
+}

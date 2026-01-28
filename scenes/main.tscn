@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id=1]
 
 [node name="Main" type="Control"]
 anchor_left = 0.0
@@ -9,6 +11,7 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
+script = ExtResource(1)
 
 [node name="Background" type="ColorRect" parent="."]
 anchor_left = 0.0
@@ -19,18 +22,89 @@ offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
 offset_bottom = 0.0
-color = Color(0.08, 0.5, 0.9, 1)
+color = Color(0.12, 0.6, 0.95, 1)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="HUD" type="VBoxContainer" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 360.0
+offset_bottom = 140.0
+
+[node name="MoneyLabel" type="Label" parent="HUD"]
+text = "Money: 0"
+
+[node name="TrendLabel" type="Label" parent="HUD"]
+text = "Trend: 1.00"
+
+[node name="IncomeLabel" type="Label" parent="HUD"]
+text = "Income/sec: 0"
+
+[node name="OfflineLabel" type="Label" parent="HUD"]
+text = ""
+
+[node name="MapContainer" type="MarginContainer" parent="."]
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 180.0
+offset_right = -24.0
+offset_bottom = -260.0
+
+[node name="Grid" type="GridContainer" parent="MapContainer"]
+columns = 7
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="BottomSheet" type="PanelContainer" parent="."]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 0.0
-offset_top = 0.0
+offset_top = -240.0
 offset_right = 0.0
 offset_bottom = 0.0
 
-[node name="Label" type="Label" parent="Center"]
-text = "Main Map (placeholder)"
-alignment = 1
+[node name="SheetVBox" type="VBoxContainer" parent="BottomSheet"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Icon" type="TextureRect" parent="BottomSheet/SheetVBox"]
+custom_minimum_size = Vector2(72, 72)
+expand_mode = 1
+stretch_mode = 6
+
+[node name="NameLabel" type="Label" parent="BottomSheet/SheetVBox"]
+text = "Select a building"
+
+[node name="LevelLabel" type="Label" parent="BottomSheet/SheetVBox"]
+text = "Level: 0"
+
+[node name="IncomeLabel" type="Label" parent="BottomSheet/SheetVBox"]
+text = "Income/sec: 0"
+
+[node name="NextIncomeLabel" type="Label" parent="BottomSheet/SheetVBox"]
+text = "Next: 0"
+
+[node name="QtyRow" type="HBoxContainer" parent="BottomSheet/SheetVBox"]
+
+[node name="QtyX1" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+text = "x1"
+
+[node name="QtyX10" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+text = "x10"
+
+[node name="QtyXMax" type="Button" parent="BottomSheet/SheetVBox/QtyRow"]
+text = "xMAX"
+
+[node name="UpgradeRow" type="HBoxContainer" parent="BottomSheet/SheetVBox"]
+
+[node name="UpgradeButton" type="Button" parent="BottomSheet/SheetVBox/UpgradeRow"]
+text = "Upgrade"
+size_flags_horizontal = 4

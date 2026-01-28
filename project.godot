@@ -24,3 +24,12 @@ window/handheld/orientation="portrait"
 [rendering]
 
 renderer/rendering_method="mobile"
+
+[autoload]
+
+ConfigService="*res://scripts/autoload/config_service.gd"
+Economy="*res://scripts/autoload/economy.gd"
+SaveService="*res://scripts/autoload/save_service.gd"
+TimeService="*res://scripts/autoload/time_service.gd"
+Events="*res://scripts/autoload/events.gd"
+GameState="*res://scripts/autoload/game_state.gd"

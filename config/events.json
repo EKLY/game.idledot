@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "events": [
+    {
+      "id": "E001",
+      "name": "Bonus Week",
+      "type": "seasonal",
+      "durationDays": 7,
+      "effects": [{ "kind": "global_income_multiplier", "value": 1.05 }],
+      "rewards": [{ "kind": "season_points", "value": 100 }]
+    }
+  ]
+}
