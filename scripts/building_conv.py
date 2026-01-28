@@ -28,9 +28,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Resize *_org.png building images to icon and tile outputs."
     )
+    default_dir = (
+        Path(__file__).resolve().parents[1] / "assets" / "sprites" / "buildings"
+    )
     parser.add_argument(
         "--dir",
-        default="assets/sprites/buildings",
+        default=str(default_dir),
         help="Directory containing *_org.png files",
     )
     parser.add_argument(
@@ -46,6 +49,7 @@ def main() -> None:
 
     args = parser.parse_args()
     base_dir = Path(args.dir)
+    print(f"Scanning for *_org.png in: {base_dir.resolve()}")
 
     if args.file:
         convert_one(base_dir / args.file, args.size)
