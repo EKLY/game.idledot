@@ -1,136 +1,36 @@
-[gd_scene load_steps=13 format=3 uid="uid://c2wh0yxc7k8ym"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://3v81f8804slb" path="res://scripts/camera_controller.gd" id="1_camera"]
-[ext_resource type="Script" uid="uid://c05663st613d4" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" uid="uid://bioirowxp1jc3" path="res://scripts/managers/hex_grid_manager.gd" id="2_hex_grid"]
-[ext_resource type="Script" uid="uid://5avl2opt6t3" path="res://scripts/managers/production_manager.gd" id="3_production"]
-[ext_resource type="Script" uid="uid://dl442h7c1wyp0" path="res://scripts/managers/transport_manager.gd" id="4_transport"]
-[ext_resource type="Script" uid="uid://mxldt7srqvxg" path="res://scripts/managers/economy_manager.gd" id="5_economy"]
-[ext_resource type="Script" uid="uid://numv8stjwocv" path="res://scripts/managers/save_load_manager.gd" id="6_save"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icon_coin.png" id="7_coin_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icon_cash.png" id="8_cash_icon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/icon_cog.png" id="9_cog_icon"]
-[ext_resource type="PackedScene" uid="uid://bottom_sheet_scene" path="res://scenes/ui/bottom_sheet.tscn" id="10_bottom_sheet"]
-[ext_resource type="PackedScene" uid="uid://settings_panel_scene" path="res://scenes/ui/settings_panel.tscn" id="11_settings"]
-
-[node name="Main" type="Node2D"]
-script = ExtResource("1_main")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-enabled = true
-script = ExtResource("1_camera")
-
-[node name="TileContainer" type="Node2D" parent="."]
-
-[node name="BuildingContainer" type="Node2D" parent="."]
-
-[node name="HexGridManager" type="Node" parent="."]
-script = ExtResource("2_hex_grid")
-
-[node name="ProductionManager" type="Node" parent="."]
-script = ExtResource("3_production")
-
-[node name="TransportManager" type="Node" parent="."]
-script = ExtResource("4_transport")
-
-[node name="EconomyManager" type="Node" parent="."]
-script = ExtResource("5_economy")
-
-[node name="SaveLoadManager" type="Node" parent="."]
-script = ExtResource("6_save")
-
-[node name="UI" type="CanvasLayer" parent="."]
-
-[node name="TopBar" type="PanelContainer" parent="UI"]
-anchors_preset = 10
+[node name="Main" type="Control"]
+anchor_left = 0.0
+anchor_top = 0.0
 anchor_right = 1.0
-offset_bottom = 60.0
-grow_horizontal = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/TopBar"]
-layout_mode = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 15
-theme_override_constants/margin_bottom = 10
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="CoinsContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="CoinIcon" type="TextureRect" parent="UI/TopBar/MarginContainer/HBoxContainer/CoinsContainer"]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("7_coin_icon")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CoinsLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer/CoinsContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "1000"
-vertical_alignment = 1
-
-[node name="CashContainer" type="HBoxContainer" parent="UI/TopBar/MarginContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="CashIcon" type="TextureRect" parent="UI/TopBar/MarginContainer/HBoxContainer/CashContainer"]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("8_cash_icon")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CashLabel" type="Label" parent="UI/TopBar/MarginContainer/HBoxContainer/CashContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "0"
-vertical_alignment = 1
-
-[node name="Spacer" type="Control" parent="UI/TopBar/MarginContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="SettingsButton" type="TextureButton" parent="UI/TopBar/MarginContainer/HBoxContainer"]
-custom_minimum_size = Vector2(40, 40)
-layout_mode = 2
-texture_normal = ExtResource("9_cog_icon")
-ignore_texture_size = true
-stretch_mode = 5
-
-[node name="BottomSheet" parent="UI" instance=ExtResource("10_bottom_sheet")]
-
-[node name="QuickInfoPanel" type="PanelContainer" parent="UI"]
-visible = false
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -100.0
-offset_right = 150.0
-offset_bottom = -20.0
-grow_horizontal = 2
-grow_vertical = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/QuickInfoPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+[node name="Background" type="ColorRect" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
+color = Color(0.08, 0.5, 0.9, 1)
 
-[node name="QuickInfoLabel" type="Label" parent="UI/QuickInfoPanel/MarginContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "Tap a tile"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Center" type="CenterContainer" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
-[node name="SettingsPanel" parent="UI" instance=ExtResource("11_settings")]
+[node name="Label" type="Label" parent="Center"]
+text = "Main Map (placeholder)"
+alignment = 1
