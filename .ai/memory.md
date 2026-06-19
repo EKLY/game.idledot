@@ -15,8 +15,12 @@
 
 ## Current Focus
 
-- Map grid drawn procedurally in `scripts/map.gd` (no image assets): pencil/hand-sketch look via `_draw()` + `FastNoiseLite` — wobbled strokes, multi-pass low-opacity graphite, overshoot, varied stroke weight. Default 12x12 to match `source/concept/grid.png`.
-- Only interior grid lines are drawn (outer border removed). Tap on a tile prints its `(x,y)` coords.
+- Map is a large pannable/zoomable pencil-sketch grid in `scripts/map.gd` (no image assets). Scene root is `Node2D` + child `Camera2D`; grid drawn once in world space, camera handles pan/zoom.
+- Size: 100x100 tiles, cell 32px (world 3200x3200). Interior lines only (no border).
+- Pencil look via `_draw()` + `FastNoiseLite` using `draw_polyline_colors` (wobble, multi-pass graphite, overshoot, edge fade; pressure-width dropped for perf).
+- Input: mouse drag pan + wheel zoom; touch one-finger pan + two-finger pinch zoom. Tap (< `tap_threshold`) selects a tile, prints `(x,y)`, and emits `tile_selected`.
+- UI mockup added (`scripts/ui.gd`, UI nodes in `scenes/map.tscn`): a `CanvasLayer` with a fixed top bar (Money/Trend/Prestige placeholders) and a bottom sheet that slides up on `tile_selected`. Popup is planned, not built.
+- See KB notes [[Map Grid]] and [[UI]] for full details.
 
 ## Known Issues / TODO
 
@@ -31,6 +35,7 @@
 
 ## Constraints / Rules to Follow
 
+- User handles git commits/pushes themselves — do NOT auto-commit or push.
 - All `.ai/*.md` files must remain English-only.
 - Follow `docs/PIXEL_ART_SPEC.md` for pixel art rules.
 - JSON-only configs in `config/`.
