@@ -1,4 +1,4 @@
-# AI_SPEC.md
+# spec.md
 
 ## Purpose
 
@@ -19,8 +19,8 @@ This specification is designed for a **single-developer, multi-AI workflow**. It
 ### Human vs AI Documentation Language
 
 - **Human-facing interaction (chat, explanations, reports)** must be written in **Thai**.
-- **All files named `AI_*.md` must be written in English only**.
-- Mixing languages inside the same `AI_*.md` file is not allowed.
+- **All files under `.ai/` (`.ai/*.md`) must be written in English only**.
+- Mixing languages inside the same `.ai/*.md` file is not allowed.
 - File paths, code, identifiers, and library names must always remain unchanged.
 - AI must not translate existing English specification content into Thai.
 
@@ -84,7 +84,7 @@ Use **fictional brands** and **parody-style neutral names**. Avoid names that ma
 
 - All 2D pixel art assets MUST comply with `docs/PIXEL_ART_SPEC.md`.
 - `docs/PIXEL_ART_SPEC.md` is the single source of truth for pixel art rules and is subordinate to this document.
-- If any conflict exists between `docs/PIXEL_ART_SPEC.md` and `AI_SPEC.md`, **AI_SPEC.md prevails**.
+- If any conflict exists between `docs/PIXEL_ART_SPEC.md` and `.ai/spec.md`, **.ai/spec.md prevails**.
 
 ---
 
@@ -428,7 +428,7 @@ A feature is done only when:
 
 To reduce prompt verbosity, AI must treat the following minimal instruction as sufficient to begin work:
 
-> "Before starting, read AI_SPEC.md and then execute the task below."
+> "Before starting, read .ai/spec.md and then execute the task below."
 
 The absence of repeated instructions in the prompt does not relax or override any rule in this specification.
 
@@ -436,9 +436,9 @@ The absence of repeated instructions in the prompt does not relax or override an
 
 ## AI Cross-Agent Rules
 
-### Optional Cross-Project Document: `AI_DOCUMENT.md`
+### Optional Cross-Project Document: `.ai/document.md`
 
-A project may optionally provide an `AI_DOCUMENT.md` file.
+A project may optionally provide an `.ai/document.md` file.
 
 This file is not required for internal development tasks. It exists to support cross-project AI interaction.
 
@@ -451,7 +451,7 @@ Its purpose is to explain, at a system and interface level:
 
 When present:
 
-- `AI_DOCUMENT.md` is written in **English only**.
+- `.ai/document.md` is written in **English only**.
 - It is a **project-facing integration document**, not a working document.
 - It may be updated after tasks are completed to reflect new or changed integration capabilities.
 - It must not be used as working memory or internal history.
@@ -459,41 +459,53 @@ When present:
 
 ---
 
+## Knowledge Base
+
+This project uses a **file-based Knowledge Base** (Obsidian vault) — not an MCP server or CLI.
+
+- **Location:** `D:\project\unno.knowledge\knowledge\Projects\UNNO\Game Idledot\`
+- **Access:** read/write Markdown files directly at that path.
+- **Structure:** one folder for the project. `Game Idledot.md` is the index note; one topic note per system (e.g. `Map Grid.md`). Notes use Obsidian frontmatter (`tags`, `aliases`) and `[[wikilinks]]`. Prose may be Thai; technical content English.
+- **Ongoing rule:** after each meaningful piece of work, record the details in the KB (what was built, key decisions, parameters, file paths). The KB is the durable design/work log. `.ai/memory.md` holds only the current state; chronological history goes to `CHANGELOG.md`.
+
+---
+
 ## Mandatory AI Execution Order
 
-1. Read `AI_SPEC.md` first
-2. Read `AI_MEMORY.md` second
+1. Read `.ai/spec.md` first
+2. Read `.ai/memory.md` second
 3. Execute the assigned task
-4. Update `AI_MEMORY.md`
+4. Update `.ai/memory.md`
+5. Record meaningful work details in the Knowledge Base (see "Knowledge Base")
 
 ---
 
 ## AI Memory Discipline
 
-- `AI_MEMORY.md` is the only persistent working memory for AI across tasks.
+- `.ai/memory.md` is the only persistent working memory for AI across tasks.
 - AI must not rely on chat history as long-term memory.
-- Any decision, assumption, or state required for future work must be written to `AI_MEMORY.md`.
+- Any decision, assumption, or state required for future work must be written to `.ai/memory.md`.
 
 ### Task-Scoped Memory File Selection
 
-AI may be instructed to use a task-specific memory file instead of the root `AI_MEMORY.md`.
+AI may be instructed to use a task-specific memory file instead of the root `.ai/memory.md`.
 
-If the user explicitly specifies a memory file path in the task instruction (e.g., "Start work by reading AI_SPEC.md using `frontend/src/pages/crm/AI_MEMORY.md`"), then:
+If the user explicitly specifies a memory file path in the task instruction (e.g., "Start work by reading .ai/spec.md using `frontend/src/pages/crm/.ai/memory.md`"), then:
 
-- Treat the specified file as the active `AI_MEMORY.md` for that task.
+- Treat the specified file as the active `.ai/memory.md` for that task.
 - Read from it as step 2 in the Mandatory AI Execution Order.
-- Write updates to that file instead of the root `AI_MEMORY.md`.
+- Write updates to that file instead of the root `.ai/memory.md`.
 
-If no memory file path is explicitly specified, use the root `AI_MEMORY.md`.
+If no memory file path is explicitly specified, use the root `.ai/memory.md`.
 
 ---
 
 ## Change Log Policy
 
-- All historical and chronological records must be written to `AI_CHANGELOG.md`.
-- `AI_MEMORY.md` must reflect only the current state, not history.
-- AI must not append change history to `AI_MEMORY.md`.
-- Every completed task or meaningful change must result in an entry in `AI_CHANGELOG.md`.
+- All historical and chronological records must be written to `CHANGELOG.md`.
+- `.ai/memory.md` must reflect only the current state, not history.
+- AI must not append change history to `.ai/memory.md`.
+- Every completed task or meaningful change must result in an entry in `CHANGELOG.md`.
 
 ---
 

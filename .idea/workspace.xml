@@ -11,15 +11,68 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AI_CHANGELOG.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AI_MEMORY.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AI_SPEC_TEMPLATE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/ui/grid_lines.gd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/ui/grid_lines.gd.uid" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-28_14_13_[Changes]/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-28_14_13_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-28_14_13__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI_CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI_MEMORY.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/memory.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AI_SPEC.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/spec.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b001_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b001_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b002_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b002_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b003.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b003_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b003_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b004.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b004_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b004_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b005.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b005_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b005_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b006_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b006_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b007.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b007_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b007_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b008.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b008_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b008_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b009.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b009_org.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/sprites/buildings/b009_tile.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/buildings.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/economy.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/events.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/missions.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/upgrades_permanent.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/main.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/welcome.tscn" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/config_service.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/config_service.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/economy.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/economy.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/events.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/events.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/game_state.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/game_state.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/save_service.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/save_service.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/time_service.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/autoload/time_service.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/building_conv.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/main.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/main.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/grid_lines.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/grid_lines.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/theme_helper.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui/theme_helper.gd.uid" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/welcome.gd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/welcome.gd.uid" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +92,65 @@
     <urls />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0000482537302615" />
+      <entry key="S5" value="1.0187677563601236" />
+      <entry key="S10" value="1.1369954610931459" />
+      <entry key="S30" value="1.5155079803738856" />
+      <entry key="S60" value="1.717988844184842" />
+      <entry key="M2" value="1.8473422237707986" />
+      <entry key="M5" value="1.9358872684198931" />
+      <entry key="M10" value="1.9674126670764103" />
+      <entry key="M15" value="1.978155376561057" />
+      <entry key="M30" value="1.9890173793018286" />
+      <entry key="H1" value="1.994493529039696" />
+      <entry key="H2" value="1.997242963895808" />
+      <entry key="H4" value="1.9986205304798255" />
+      <entry key="D1" value="1.999769956153449" />
+      <entry key="W1" value="1.999967133352878" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.9265880618903709" />
+      <entry key="MS500" value="0.9848664428955506" />
+      <entry key="S2" value="0.996241784866941" />
+      <entry key="S5" value="1.0170215715225537" />
+      <entry key="S10" value="1.1354190800333201" />
+      <entry key="S30" value="1.514230550051409" />
+      <entry key="S60" value="1.71714879972384" />
+      <entry key="M2" value="1.8468578699355072" />
+      <entry key="M5" value="1.9356759089691549" />
+      <entry key="M10" value="1.967303850724533" />
+      <entry key="M15" value="1.978082119737847" />
+      <entry key="M30" value="1.9889803906335444" />
+      <entry key="H1" value="1.9944749438915645" />
+      <entry key="H2" value="1.9972336485239113" />
+      <entry key="H4" value="1.9986158670825895" />
+      <entry key="D1" value="1.999769178126336" />
+      <entry key="W1" value="1.9999670221866834" />
+    </decayedShown>
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 0
@@ -220,7 +332,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769598559712</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Add introductory scripts and AI_SPEC.md&#10;&#10;- Implement `welcome.gd` script to handle scene transitions with auto-advance and input interactions.&#10;- Add `AI_SPEC.md`, defining comprehensive project rules, architecture, and gameplay design for the mobile idle game.&#10;- Include initial IDEA project files (`encodings.xml`, `workspace.xml`).">
+      <option name="closed" value="true" />
+      <created>1781855942327</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1781855942327</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -230,7 +350,8 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'&#10;&#10;# Conflicts:&#10;#&#9;assets/sprites/building_beach_coral.png.import&#10;#&#9;assets/sprites/building_building_furture.png.import&#10;#&#9;assets/sprites/building_building_slider.png.import&#10;#&#9;assets/sprites/building_factory.png.import&#10;#&#9;assets/sprites/building_factory_chimney.png.import&#10;#&#9;assets/sprites/building_farm.png.import&#10;#&#9;assets/sprites/building_farm_wheat.png.import&#10;#&#9;assets/sprites/building_fishing_ice.png.import&#10;#&#9;assets/sprites/building_forest.png.import&#10;#&#9;assets/sprites/building_forest_deep.png.import&#10;#&#9;assets/sprites/building_forest_haunted.png.import&#10;#&#9;assets/sprites/building_fram_market.png.import&#10;#&#9;assets/sprites/building_hotel_snow.png.import&#10;#&#9;assets/sprites/building_mill.png.import&#10;#&#9;assets/sprites/building_mine.png.import&#10;#&#9;assets/sprites/building_mountain.png.import&#10;#&#9;assets/sprites/building_mountain_mine.png.import&#10;#&#9;assets/sprites/building_mountain_waterfall.png.import&#10;#&#9;assets/sprites/building_restaurant.png.import&#10;#&#9;assets/sprites/building_restaurant_seafood.png.import&#10;#&#9;assets/sprites/building_rock_ice.png.import&#10;#&#9;assets/sprites/building_school.png.import&#10;#&#9;assets/sprites/building_wood_log.png.import&#10;#&#9;assets/sprites/building_wood_plank.png.import" />
     <MESSAGE value="..." />
-    <option name="LAST_COMMIT_MESSAGE" value="..." />
+    <MESSAGE value="Add introductory scripts and AI_SPEC.md&#10;&#10;- Implement `welcome.gd` script to handle scene transitions with auto-advance and input interactions.&#10;- Add `AI_SPEC.md`, defining comprehensive project rules, architecture, and gameplay design for the mobile idle game.&#10;- Include initial IDEA project files (`encodings.xml`, `workspace.xml`)." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add introductory scripts and AI_SPEC.md&#10;&#10;- Implement `welcome.gd` script to handle scene transitions with auto-advance and input interactions.&#10;- Add `AI_SPEC.md`, defining comprehensive project rules, architecture, and gameplay design for the mobile idle game.&#10;- Include initial IDEA project files (`encodings.xml`, `workspace.xml`)." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
