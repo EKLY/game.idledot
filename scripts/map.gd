@@ -60,6 +60,7 @@ extends Node2D
 
 var _noise := FastNoiseLite.new()
 var _dragging := false
+var _pan_enabled := true
 var _drag_moved := 0.0
 var _touches := {}
 var _pinch_dist := 0.0
@@ -157,6 +158,8 @@ func _gap(gap_off: float, dist: float) -> float:
 	return 0.0 if n > 1.0 - gap_amount else 1.0
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not _pan_enabled:
+		return
 	if event is InputEventMouseButton:
 		_handle_mouse_button(event)
 	elif event is InputEventMouseMotion and _dragging:
@@ -166,6 +169,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		_handle_touch(event)
 	elif event is InputEventScreenDrag:
 		_handle_touch_drag(event)
+
+## Lets a modal (e.g. the dialog) freeze map pan/zoom/tap while it's open.
+func set_pan_enabled(value: bool) -> void:
+	_pan_enabled = value
+	if not value:
+		_dragging = false
+		_touches.clear()
+		_pinch_dist = 0.0
 
 func _handle_mouse_button(event: InputEventMouseButton) -> void:
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:

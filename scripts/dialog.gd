@@ -18,9 +18,17 @@ func _ready() -> void:
 func open(title: String) -> void:
 	_title.text = title
 	visible = true
+	_set_world_input(false)
 
 func close() -> void:
 	visible = false
+	_set_world_input(true)
+
+# Freeze/unfreeze the parent's pan/zoom/tap while the dialog is up.
+func _set_world_input(enabled: bool) -> void:
+	var p := get_parent()
+	if p.has_method("set_pan_enabled"):
+		p.set_pan_enabled(enabled)
 
 func _on_backdrop_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
