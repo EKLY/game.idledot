@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-06-22
+
+- ui: add reusable `SketchBox` hand-drawn frame (paper fill, wobble border, rounded corners, soft shadow, paper-stain noise via NoiseTexture2D); use it for the top bar and bottom sheet; add side/bottom margins so they float as cards.
+- map: scatter grass tufts + pebbles per cell (deterministic hash), monochrome grid-line tone (`tile_decorator.gd`).
+- terrain: add procedural mountains (1-3 peaks, random heights, snow, foot rocks), fan-tuft broadleaf trees, 3-tier boulders, and still ponds — all hand-drawn mono with pencil wobble (`terrain.gd`). Conifer trees and a path-based river were tried and removed.
+- world: introduce `WorldData` (resources + per-cell `cell_kind` + occupancy), generated once from a seed in `map.gd`; terrain & decorator now read it instead of rolling their own noise — query via `kind_at` / `is_occupied` / `label_at`.
+- map: add blue selection highlight (`cell_selector.gd`); pan overscroll (half a screen past top/bottom); viewport clear-color = paper; `set_pan_enabled` to freeze input.
+- ui: bottom sheet shows the selected cell's content (Mountain/Pond/Forest/Boulder/Grassland/Pebbles/Empty) + coords.
+- ui: add reusable `CenterDialog` (backdrop + SketchBox), opened by a new ⚙ Settings button; freezes the map while open.
+- plan: draft `.ai/plan-buildings.md` (buildings + roads + manual routing; placeholder render, sprites later).
+
 ## 2026-06-19
 
 - spec: migrate legacy `AI_*.md` to `.ai/` (`spec.md`, `memory.md`) and `AI_CHANGELOG.md` to `CHANGELOG.md`; reconcile internal references.

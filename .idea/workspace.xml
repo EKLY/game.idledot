@@ -11,8 +11,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/scenes/map.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/map.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/ui.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ui.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ai/backlog.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/backlog.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ai/memory.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/memory.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -320,7 +322,23 @@
       <option name="project" value="LOCAL" />
       <updated>1782125267248</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Add reusable centered dialog with backdrop and close functionality&#10;&#10;- Implemented `CenterDialog` component for modal dialogs with a dim backdrop and customizable content">
+      <option name="closed" value="true" />
+      <created>1782125635413</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1782125635413</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Freeze map interaction when dialog is active&#10;&#10;- Added `_pan_enabled` to control map panning and zooming.&#10;- Introduced `set_pan_enabled` to toggle map interaction from parent nodes.&#10;- Updated `dialog.gd` to disable/enable map input when dialogs are opened/closed.&#10;- Centered dialog display using updated panel anchors in `map.tscn`.">
+      <option name="closed" value="true" />
+      <created>1782126119351</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1782126119351</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -336,7 +354,10 @@
     <MESSAGE value="Add reusable &quot;SketchBox&quot; component for hand-drawn UI elements&#10;&#10;- Implemented `SketchBox` script for creating customizable pencil-sketch-styled UI frames, including rounded borders, shadows, and paper textures.&#10;- Replaced top bar and bottom sheet in the map scene with `SketchBox`, ensuring consistent visual style.&#10;- Adjusted margins and constants across the UI for seamless integration." />
     <MESSAGE value="Add procedural terrain and map decorations&#10;&#10;- Added `Terrain` script to generate and draw hand-drawn mountains, trees, and boulders with procedural outlines and randomized details.&#10;- Created `TileDecorator` script for deterministic scattering of grass tufts and pebbles across the map grid.&#10;- Integrated `Terrain` and `TileDecorator` as child nodes in the map scene.&#10;- Ensured compatibility with the existing hand-drawn style and caching approach for optimal rendering performance." />
     <MESSAGE value="Add world generation and selection system&#10;&#10;- Introduced `WorldData` for procedural map generation, managing resources (mountains, ponds) and scatter elements (trees, grass, pebbles, boulders).&#10;- Added `CellSelector` for efficient tile highlighting and selection management.&#10;- Enhanced `Terrain` and `TileDecorator` to render based on `WorldData`.&#10;- Updated map scene to integrate world generation and tile selection signals.&#10;- Refined UI to display detailed tile information dynamically." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add world generation and selection system&#10;&#10;- Introduced `WorldData` for procedural map generation, managing resources (mountains, ponds) and scatter elements (trees, grass, pebbles, boulders).&#10;- Added `CellSelector` for efficient tile highlighting and selection management.&#10;- Enhanced `Terrain` and `TileDecorator` to render based on `WorldData`.&#10;- Updated map scene to integrate world generation and tile selection signals.&#10;- Refined UI to display detailed tile information dynamically." />
+    <MESSAGE value="Add reusable centered dialog with backdrop and close functionality&#10;&#10;- Implemented `CenterDialog` component" />
+    <MESSAGE value=".&#10;- Added a &quot;Settings&quot; button to the top bar, triggering the dialog with a title.&#10;- Updated the map scene to integrate the new dialog system." />
+    <MESSAGE value="Freeze map interaction when dialog is active&#10;&#10;- Added `_pan_enabled` to control map panning and zooming.&#10;- Introduced `set_pan_enabled` to toggle map interaction from parent nodes.&#10;- Updated `dialog.gd` to disable/enable map input when dialogs are opened/closed.&#10;- Centered dialog display using updated panel anchors in `map.tscn`." />
+    <option name="LAST_COMMIT_MESSAGE" value="Freeze map interaction when dialog is active&#10;&#10;- Added `_pan_enabled` to control map panning and zooming.&#10;- Introduced `set_pan_enabled` to toggle map interaction from parent nodes.&#10;- Updated `dialog.gd` to disable/enable map input when dialogs are opened/closed.&#10;- Centered dialog display using updated panel anchors in `map.tscn`." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

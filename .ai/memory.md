@@ -2,42 +2,34 @@
 
 ## Current State
 
-- Project root: `d:\project\game.idledot`
-- Engine: Godot 4.6
-- Language: GDScript
-- The old system (autoloads, economy, bottom sheet, config, sprites) was fully wiped to rewrite from scratch.
-- Main scene: `scenes/map.tscn` (welcome screen was removed; map is the entry point).
-- Scenes: `scenes/map.tscn`
-- Scripts: `scripts/map.gd`
-- No autoloads registered (removed from `project.godot`).
-- No `config/` and no `assets/` yet (deleted; to be rebuilt).
-- Design docs kept under `docs/` (UI_SPEC_MAP, ECONOMY_SPEC, DATA_SCHEMA, PIXEL_ART_SPEC, UI_SPEC_BUILDING_PANEL, AI_PLAN) — primary reference for the rewrite.
+- Godot 4.6 / GDScript, mobile portrait. Entry scene: `scenes/map.tscn`. No autoloads yet.
+- The map is now **data-driven**: `WorldData` (`scripts/world_data.gd`, RefCounted) is the source of truth, generated once from a seed in `map.gd._ready`.
+  - `resources[]` = mountains / ponds (placed, reserve cells via `occupancy`).
+  - `cell_kind[]` = per-cell scatter, one kind each: EMPTY / GRASS / PEBBLE / TREE / BOULDER.
+  - Query: `kind_at`, `is_occupied`, `label_at`. Detail (sub-positions/sizes/counts) is still hashed per cell at draw time — we store the layout, not every blade.
+- Renderers READ WorldData:
+  - `map.gd` — pencil-sketch grid (Node2D + Camera2D, pan/zoom), generates the world, sets viewport clear-color = paper.
+  - `tile_decorator.gd` (node `Decorations`) — grass tufts + pebbles, mono.
+  - `terrain.gd` (node `Terrain`) — mountains, ponds, fan-tuft broadleaf trees, 3-tier boulders, mono with pencil wobble. (Conifer trees + a path-based river were tried then removed.)
+  - `cell_selector.gd` (node `Selection`) — blue highlight on the selected cell.
+- Camera: pan/zoom + `pan_overscroll` (pan half a screen past top/bottom so tiles aren't hidden behind the bars); `set_pan_enabled(false)` freezes map input (used by the dialog).
+- UI (`scripts/ui.gd`):
+  - `sketch_box.gd` (`SketchBox`) — reusable hand-drawn frame (paper fill, wobble border, rounded corners, soft shadow, paper-stain NoiseTexture2D). Used by top bar AND bottom sheet.
+  - Bottom sheet shows the selected cell's content via `world.label_at` (Mountain/Pond/Forest/Boulder/Grassland/Pebbles/Empty) + coords. income/upgrade still mockup.
+  - `dialog.gd` (`CenterDialog`) — reusable centred modal (backdrop + SketchBox), opened by the ⚙ Settings button; freezes the map while open.
 
-## Current Focus
+## Current Focus / Next
 
-- Map is a large pannable/zoomable pencil-sketch grid in `scripts/map.gd` (no image assets). Scene root is `Node2D` + child `Camera2D`; grid drawn once in world space, camera handles pan/zoom.
-- Size: 100x100 tiles, cell 32px (world 3200x3200). Interior lines only (no border).
-- Pencil look via `_draw()` + `FastNoiseLite` using `draw_polyline_colors` (wobble, multi-pass graphite, overshoot, edge fade; pressure-width dropped for perf).
-- Input: mouse drag pan + wheel zoom; touch one-finger pan + two-finger pinch zoom. Tap (< `tap_threshold`) selects a tile, prints `(x,y)`, and emits `tile_selected`.
-- UI mockup added (`scripts/ui.gd`, UI nodes in `scenes/map.tscn`): a `CanvasLayer` with a fixed top bar (Money/Trend/Prestige placeholders) and a bottom sheet that slides up on `tile_selected`. Popup is planned, not built.
-- See KB notes [[Map Grid]] and [[UI]] for full details.
-
-## Known Issues / TODO
-
-- Validate scenes/scripts open without error in Godot editor (no Godot CLI available locally to verify headless).
-- Next steps for the grid (per `docs/UI_SPEC_MAP.md`): data-driven tile placement, locked/empty tile states, bottom-sheet host, visual state cues.
+- Next: **Buildings & Roads** — follow `.ai/plan-buildings.md` (start Step 1: WorldData buildings/roads + `can_place`). Placeholder render first, roads manual+validate first, sprites later.
 
 ## Knowledge Base
 
-- File-based KB (Obsidian vault) at `D:\project\unno.knowledge\knowledge\Projects\UNNO\Game Idledot\`.
-- Index note `Game Idledot.md`; topic notes per system (e.g. `Map Grid.md`).
-- After each meaningful piece of work, record details in the KB (see `.ai/spec.md` -> Knowledge Base).
+- File-based Obsidian vault at `D:\project\unno.knowledge\knowledge\Projects\UNNO\Game Idledot\`.
+- Notes: `Game Idledot` (index), `Map Grid`, `Map Objects`, `UI`. Log meaningful work here.
 
-## Constraints / Rules to Follow
+## Constraints / Rules
 
-- User handles git commits/pushes themselves — do NOT auto-commit or push.
-- All `.ai/*.md` files must remain English-only.
-- Follow `docs/PIXEL_ART_SPEC.md` for pixel art rules.
-- JSON-only configs in `config/`.
-- Save format is JSON in `user://` with versioning.
-
+- User handles git commits/pushes — do NOT auto-commit or push.
+- `.ai/*.md` English-only. JSON-only configs in `config/`. Save = JSON in `user://` (not built yet).
+- No Godot CLI locally — can't verify headless; the user runs the editor to test.
+- Default map stays mono (pencil); only player buildings get colour.
