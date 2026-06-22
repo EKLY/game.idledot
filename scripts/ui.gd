@@ -18,20 +18,27 @@ const SHEET_MARGIN := 14.0
 @onready var _qty_x1: Button = $Root/BottomSheet/Margin/VBox/QtyRow/QtyX1
 @onready var _qty_x10: Button = $Root/BottomSheet/Margin/VBox/QtyRow/QtyX10
 @onready var _qty_xmax: Button = $Root/BottomSheet/Margin/VBox/QtyRow/QtyXMax
+@onready var _settings: Button = $Root/TopBar/HBox/Settings
 
 var _tween: Tween
 var _open := false
+var _dialog: CenterDialog
 
 func _ready() -> void:
 	var map := get_parent()
 	if map.has_signal("tile_selected"):
 		map.tile_selected.connect(_on_tile_selected)
+	_dialog = get_node("../Dialog")
+	_settings.pressed.connect(_on_settings_pressed)
 	_close.pressed.connect(hide_sheet)
 	_qty_x1.pressed.connect(_set_qty.bind("x1"))
 	_qty_x10.pressed.connect(_set_qty.bind("x10"))
 	_qty_xmax.pressed.connect(_set_qty.bind("xMAX"))
 	_sheet.offset_top = 0.0
 	_sheet.offset_bottom = SHEET_H
+
+func _on_settings_pressed() -> void:
+	_dialog.open("Settings")
 
 func _on_tile_selected(x: int, y: int) -> void:
 	var world: WorldData = get_parent().world

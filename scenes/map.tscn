@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/map.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/tile_decorator.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/terrain.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/cell_selector.gd" id="6"]
+[ext_resource type="Script" path="res://scripts/dialog.gd" id="7"]
 
 [sub_resource type="Theme" id="Theme_ui"]
 Label/colors/font_color = Color(0.29, 0.259, 0.204, 1)
@@ -80,6 +81,13 @@ layout_mode = 2
 [node name="Prestige" type="Label" parent="UI/Root/TopBar/HBox"]
 layout_mode = 2
 text = "✦ 0"
+
+[node name="Settings" type="Button" parent="UI/Root/TopBar/HBox"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+flat = true
+theme_override_font_sizes/font_size = 20
+text = "⚙"
 
 [node name="BottomSheet" type="MarginContainer" parent="UI/Root"]
 layout_mode = 1
@@ -176,3 +184,59 @@ text = "xMAX"
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "Upgrade x1        (cost 100)"
+
+[node name="Dialog" type="CanvasLayer" parent="."]
+layer = 5
+script = ExtResource("7")
+
+[node name="Backdrop" type="ColorRect" parent="Dialog"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.18, 0.16, 0.12, 0.45)
+
+[node name="Panel" type="MarginContainer" parent="Dialog"]
+anchors_preset = 8
+offset_left = -180.0
+offset_top = -150.0
+offset_right = 180.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_ui")
+script = ExtResource("3")
+
+[node name="Margin" type="MarginContainer" parent="Dialog/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 22
+
+[node name="VBox" type="VBoxContainer" parent="Dialog/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="Dialog/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Dialog/Panel/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "Dialog"
+
+[node name="CloseButton" type="Button" parent="Dialog/Panel/Margin/VBox/Header"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+flat = true
+text = "✕"
+
+[node name="Body" type="Label" parent="Dialog/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.541, 0.498, 0.42, 1)
+text = "Settings content goes here…"
