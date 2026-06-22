@@ -6,8 +6,11 @@ extends CanvasLayer
 
 const SHEET_H := 320.0
 const ANIM := 0.22
+# Gap kept below the sheet so it floats above the screen edge, matching the
+# top bar's side/top margins.
+const SHEET_MARGIN := 14.0
 
-@onready var _sheet: Panel = $Root/BottomSheet
+@onready var _sheet: SketchBox = $Root/BottomSheet
 @onready var _name: Label = $Root/BottomSheet/Margin/VBox/Header/HeaderText/Name
 @onready var _close: Button = $Root/BottomSheet/Margin/VBox/Header/CloseButton
 @onready var _upgrade: Button = $Root/BottomSheet/Margin/VBox/Upgrade
@@ -37,7 +40,7 @@ func show_sheet() -> void:
 	if _open:
 		return
 	_open = true
-	_slide(-SHEET_H, 0.0)
+	_slide(-(SHEET_H + SHEET_MARGIN), -SHEET_MARGIN)
 
 func hide_sheet() -> void:
 	if not _open:

@@ -11,11 +11,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.ai/memory.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/memory.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/map.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/map.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/map.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/map.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ui.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,7 +21,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="221" />
+    <option name="cachedIndexableFilesCount" value="131" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -38,22 +36,22 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000014085548496" />
-      <entry key="S2" value="1.039469821033847" />
-      <entry key="S5" value="1.3957946451821437" />
-      <entry key="S10" value="2.090704990281939" />
-      <entry key="S30" value="4.562723463819669" />
-      <entry key="S60" value="6.67439081717493" />
-      <entry key="M2" value="8.444504907687152" />
-      <entry key="M5" value="10.316846604720853" />
-      <entry key="M10" value="12.110265563839981" />
-      <entry key="M15" value="13.2855370986783" />
-      <entry key="M30" value="15.094642933412668" />
-      <entry key="H1" value="16.369244576882082" />
-      <entry key="H2" value="17.13348902829776" />
-      <entry key="H4" value="17.553017408324035" />
-      <entry key="D1" value="17.923510081459444" />
-      <entry key="W1" value="17.98902289568543" />
+      <entry key="MS500" value="1.0000000000000187" />
+      <entry key="S2" value="1.0006498022529704" />
+      <entry key="S5" value="1.1042039031040398" />
+      <entry key="S10" value="1.657754342180763" />
+      <entry key="S30" value="3.4887257221679504" />
+      <entry key="S60" value="4.705899900003768" />
+      <entry key="M2" value="6.174502087470774" />
+      <entry key="M5" value="9.979430723588383" />
+      <entry key="M10" value="15.00768803354185" />
+      <entry key="M15" value="18.323388088473756" />
+      <entry key="M30" value="23.465206837441112" />
+      <entry key="H1" value="27.157427275722704" />
+      <entry key="H2" value="29.408876113830235" />
+      <entry key="H4" value="30.658115402995737" />
+      <entry key="D1" value="31.76955753247795" />
+      <entry key="W1" value="31.966908281414074" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -75,23 +73,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9201876506248751" />
-      <entry key="MS500" value="0.9835034555098532" />
-      <entry key="S2" value="1.0351337230800093" />
-      <entry key="S5" value="1.3934177998026887" />
-      <entry key="S10" value="2.088910084993843" />
-      <entry key="S30" value="4.5614055338514765" />
-      <entry key="S60" value="6.673420193807705" />
-      <entry key="M2" value="8.443887828663076" />
-      <entry key="M5" value="10.316541867447588" />
-      <entry key="M10" value="12.110078448098605" />
-      <entry key="M15" value="13.285394153835394" />
-      <entry key="M30" value="15.09455566546581" />
-      <entry key="H1" value="16.36919487080539" />
-      <entry key="H2" value="17.133462272811926" />
-      <entry key="H4" value="17.553003496784942" />
-      <entry key="D1" value="17.923507683236437" />
-      <entry key="W1" value="17.989022551056216" />
+      <entry key="MS100" value="0.9075191553171609" />
+      <entry key="MS500" value="0.9807790039885699" />
+      <entry key="S2" value="0.9958067819518153" />
+      <entry key="S5" value="1.1020814818311986" />
+      <entry key="S10" value="1.6561873433940733" />
+      <entry key="S30" value="3.487629618775882" />
+      <entry key="S60" value="4.705153583396432" />
+      <entry key="M2" value="6.173999918224975" />
+      <entry key="M5" value="9.979085498863872" />
+      <entry key="M10" value="15.007417455054313" />
+      <entry key="M15" value="18.323162883381993" />
+      <entry key="M30" value="23.46505742370991" />
+      <entry key="H1" value="27.157338518380282" />
+      <entry key="H2" value="29.40882728348346" />
+      <entry key="H4" value="30.65808972637049" />
+      <entry key="D1" value="31.76955306342374" />
+      <entry key="W1" value="31.96690763813246" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -106,23 +104,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.building_conv.executor": "Run",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cidr.known.project.marker": "true",
-    "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.building_conv.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecapSpentCounter">
     <option name="endsOfQuotaMs" value="1771556410856" />
     <option name="spentUsd" value="0.18444704" />
@@ -291,7 +289,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781858943843</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add map UI mockup and enhance grid functionality&#10;&#10;- Introduced `CanvasLayer` with fixed top bar and bottom sheet UI components. &#10;- Configured `tile_selected` signal to trigger bottom sheet, displaying placeholder tile details.  &#10;- Expanded map to 100x100 tiles with zoom and panning implemented for both mouse and touch inputs.&#10;- Optimized grid rendering with procedural pencil-sketch effect.">
+      <option name="closed" value="true" />
+      <created>1781867864843</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1781867864843</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -303,7 +309,8 @@
     <MESSAGE value="..." />
     <MESSAGE value="Add introductory scripts and AI_SPEC.md&#10;&#10;- Implement `welcome.gd` script to handle scene transitions with auto-advance and input interactions.&#10;- Add `AI_SPEC.md`, defining comprehensive project rules, architecture, and gameplay design for the mobile idle game.&#10;- Include initial IDEA project files (`encodings.xml`, `workspace.xml`)." />
     <MESSAGE value="Remove unused scripts, JSON configs, and assets related to the building economy system." />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove unused scripts, JSON configs, and assets related to the building economy system." />
+    <MESSAGE value="Add map UI mockup and enhance grid functionality&#10;&#10;- Introduced `CanvasLayer` with fixed top bar and bottom sheet UI components. &#10;- Configured `tile_selected` signal to trigger bottom sheet, displaying placeholder tile details.  &#10;- Expanded map to 100x100 tiles with zoom and panning implemented for both mouse and touch inputs.&#10;- Optimized grid rendering with procedural pencil-sketch effect." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add map UI mockup and enhance grid functionality&#10;&#10;- Introduced `CanvasLayer` with fixed top bar and bottom sheet UI components. &#10;- Configured `tile_selected` signal to trigger bottom sheet, displaying placeholder tile details.  &#10;- Expanded map to 100x100 tiles with zoom and panning implemented for both mouse and touch inputs.&#10;- Optimized grid rendering with procedural pencil-sketch effect." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

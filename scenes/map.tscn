@@ -1,29 +1,14 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/map.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/sketch_box.gd" id="3"]
 
 [sub_resource type="Theme" id="Theme_ui"]
 Label/colors/font_color = Color(0.29, 0.259, 0.204, 1)
 Button/colors/font_color = Color(0.29, 0.259, 0.204, 1)
 Button/colors/font_hover_color = Color(0.435, 0.392, 0.325, 1)
 Button/colors/font_pressed_color = Color(0.18, 0.16, 0.12, 1)
-
-[sub_resource type="StyleBoxFlat" id="SB_top"]
-bg_color = Color(0.937, 0.91, 0.847, 0.95)
-border_width_bottom = 2
-border_color = Color(0.435, 0.392, 0.325, 0.6)
-content_margin_left = 16.0
-content_margin_top = 10.0
-content_margin_right = 16.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="SB_sheet"]
-bg_color = Color(0.965, 0.945, 0.894, 0.98)
-border_width_top = 2
-border_color = Color(0.435, 0.392, 0.325, 0.6)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
 
 [sub_resource type="ButtonGroup" id="BG_qty"]
 
@@ -45,12 +30,19 @@ grow_vertical = 2
 mouse_filter = 2
 theme = SubResource("Theme_ui")
 
-[node name="TopBar" type="PanelContainer" parent="UI/Root"]
+[node name="TopBar" type="MarginContainer" parent="UI/Root"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
+offset_left = 14.0
+offset_top = 14.0
+offset_right = -14.0
 grow_horizontal = 2
-theme_override_styles/panel = SubResource("SB_top")
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
+script = ExtResource("3")
 
 [node name="HBox" type="HBoxContainer" parent="UI/Root/TopBar"]
 layout_mode = 2
@@ -77,22 +69,22 @@ layout_mode = 2
 layout_mode = 2
 text = "✦ 0"
 
-[node name="BottomSheet" type="Panel" parent="UI/Root"]
+[node name="BottomSheet" type="MarginContainer" parent="UI/Root"]
 layout_mode = 1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 14.0
+offset_right = -14.0
 offset_bottom = 320.0
 grow_horizontal = 2
-theme_override_styles/panel = SubResource("SB_sheet")
+script = ExtResource("3")
+corner_radius = 22.0
+shadow_offset = Vector2(0, -4)
+shadow_spread = 12.0
 
 [node name="Margin" type="MarginContainer" parent="UI/Root/BottomSheet"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
