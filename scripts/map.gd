@@ -9,6 +9,17 @@ extends Node2D
 @export var rows: int = 100
 @export var cell_size: int = 32
 
+@export_group("World Gen")
+# Seed + densities/counts the map is generated from. Resources & scatter layout
+# are baked into `world` once on _ready; renderers read it (see WorldData).
+@export var world_seed: int = 2024
+@export var mountain_count: int = 4
+@export var pond_count: int = 3
+@export_range(0.0, 1.0) var grass_density: float = 0.22
+@export_range(0.0, 1.0) var pebble_density: float = 0.07
+@export_range(0.0, 1.0) var tree_density: float = 0.04
+@export_range(0.0, 1.0) var boulder_density: float = 0.03
+
 @export_group("Sketch Style")
 @export var paper_color: Color = Color("f1ece0")
 @export var line_color: Color = Color("6f6453")
@@ -41,6 +52,9 @@ extends Node2D
 @export var zoom_step: float = 1.1
 # A drag shorter than this (px) counts as a tap, not a pan.
 @export var tap_threshold: float = 6.0
+# How far past the top / bottom edge you can pan, in screen-heights — lets tiles
+# hidden behind the top bar / bottom sheet scroll into view.
+@export var pan_overscroll: float = 0.5
 
 @onready var _camera: Camera2D = $Camera2D
 
@@ -50,22 +64,43 @@ var _drag_moved := 0.0
 var _touches := {}
 var _pinch_dist := 0.0
 
+## The generated world (resources + per-cell scatter). Read by Terrain / TileDecorator.
+var world: WorldData
+
 ## Emitted when the player taps a tile (a tap, not a drag).
 signal tile_selected(tile_x: int, tile_y: int)
+## Emitted when the current selection is cleared (e.g. the panel is closed).
+signal tile_deselected
 
 func _ready() -> void:
+	# Paint the viewport background the same as the grid paper, so the area shown
+	# when overscrolling past the map edge blends in instead of a grey void.
+	RenderingServer.set_default_clear_color(paper_color)
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	_noise.frequency = 1.0
 	_noise.seed = 1337
 	var ms := _map_size()
 	_camera.position = ms * 0.5
 	_camera.zoom = Vector2.ONE
+	# Widen the top/bottom render limits so the overscroll (panning past the edge)
+	# isn't clamped away by Camera2D. _clamp_camera does the real per-zoom limiting.
+	var over_max := get_viewport().get_visible_rect().size.y * pan_overscroll / min_zoom
 	_camera.limit_left = 0
-	_camera.limit_top = 0
+	_camera.limit_top = int(-over_max)
 	_camera.limit_right = int(ms.x)
-	_camera.limit_bottom = int(ms.y)
+	_camera.limit_bottom = int(ms.y + over_max)
 	_camera.make_current()
 	_clamp_camera()
+	# Generate the world once, then ask the drawing children to render from it.
+	# (Children _ready before the parent, so they draw empty until this runs.)
+	world = WorldData.generate(world_seed, cols, rows, {
+		"mountain_count": mountain_count, "pond_count": pond_count,
+		"tree_density": tree_density, "boulder_density": boulder_density,
+		"grass_density": grass_density, "pebble_density": pebble_density,
+	})
+	for c in get_children():
+		if c is CanvasItem:
+			c.queue_redraw()
 
 func _map_size() -> Vector2:
 	return Vector2(cols * cell_size, rows * cell_size)
@@ -199,7 +234,10 @@ func _clamp_camera() -> void:
 	var ms := _map_size()
 	var pos := _camera.position
 	pos.x = ms.x * 0.5 if half.x * 2.0 >= ms.x else clampf(pos.x, half.x, ms.x - half.x)
-	pos.y = ms.y * 0.5 if half.y * 2.0 >= ms.y else clampf(pos.y, half.y, ms.y - half.y)
+	# Allow panning `pan_overscroll` screens past the top & bottom edges, so tiles
+	# behind the top bar / bottom sheet can be scrolled into view.
+	var over_y := get_viewport().get_visible_rect().size.y * pan_overscroll / _camera.zoom.y
+	pos.y = ms.y * 0.5 if half.y * 2.0 >= ms.y else clampf(pos.y, half.y - over_y, ms.y - half.y + over_y)
 	_camera.position = pos
 
 func _select_at(world_pos: Vector2) -> void:
@@ -210,3 +248,6 @@ func _select_at(world_pos: Vector2) -> void:
 	var ty := int(world_pos.y / cell_size)
 	print("[map] tile pressed (%d,%d)" % [tx, ty])
 	tile_selected.emit(tx, ty)
+
+func clear_selection() -> void:
+	tile_deselected.emit()

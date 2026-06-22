@@ -1,16 +1,15 @@
 extends Node2D
 class_name Terrain
 
-## Hand-drawn (procedural) mountains over the grid — no sprites. Mono palette to
-## match the sketch map (player buildings get colour, not terrain). Each entry is
-## Vector3i(cell_x, cell_y, width_cells 1..3); height is fixed in cells. Drawn
-## once and cached like the grid. Child of Map; reads cell_size from the parent.
-## See KB [[Map Objects]].
+## Hand-drawn (procedural) terrain over the grid — mountains, ponds, trees,
+## boulders; no sprites. Reads the layout from the parent Map's `world`
+## (WorldData): big resources from `resources`, scatter from `cell_kind`. Mono
+## palette (player buildings get colour, not terrain). See KB [[Map Objects]].
 
-@export var mountains: Array[Vector3i] = [Vector3i(46, 50, 1), Vector3i(49, 50, 2), Vector3i(53, 50, 3)]:
-	set(value):
-		mountains = value
-		queue_redraw()
+# Salts for hashing per-cell detail (counts, sub-positions, sizes) at draw time.
+const TREE_SALT := 23
+const BOULDER_SALT := 41
+
 @export var height_cells: float = 2.0:
 	set(value):
 		height_cells = value
@@ -38,18 +37,15 @@ class_name Terrain
 		line_width = value
 		queue_redraw()
 
+@export_group("Ponds")
+# Blue-gray so water reads as water without competing with coloured buildings.
+@export var water_color: Color = Color(0.66, 0.73, 0.76)
+@export var water_deep: Color = Color(0.52, 0.62, 0.68)
+@export var ripple_color: Color = Color(0.45, 0.55, 0.6, 0.8)
+
 @export_group("Trees")
-# Trees are scattered like grass: random cells get 1-3 trees at random spots and
-# sizes. Each tree is drawn from its trunk base, so foliage may spill outside the
-# cell. Placement is deterministic (hashed per cell) and cached with the rest.
-@export_range(0.0, 1.0) var tree_density: float = 0.04:
-	set(value):
-		tree_density = value
-		queue_redraw()
-@export var tree_seed: int = 23:
-	set(value):
-		tree_seed = value
-		queue_redraw()
+# Which cells get trees (and how many) comes from the world generator; a TREE
+# cell holds 1-3 trees at hashed spots/sizes. These are just the look.
 @export var canopy_color: Color = Color(0.8, 0.79, 0.75)
 @export var canopy_shade: Color = Color(0.6, 0.58, 0.53)
 @export var trunk_color: Color = Color(0.42, 0.37, 0.3)
@@ -60,16 +56,8 @@ class_name Terrain
 @export_range(4, 12) var canopy_lobes: int = 8
 
 @export_group("Boulders")
-# Scattered like trees. Each boulder is one of 3 size tiers (small/medium/large)
-# — same shape, only the size differs.
-@export_range(0.0, 1.0) var boulder_density: float = 0.03:
-	set(value):
-		boulder_density = value
-		queue_redraw()
-@export var boulder_seed: int = 41:
-	set(value):
-		boulder_seed = value
-		queue_redraw()
+# 3 size tiers (small/medium/large), same shape. Which cells get them and the
+# tier come from the world generator / cell hash.
 @export var boulder_color: Color = Color(0.7, 0.68, 0.63)
 @export var boulder_shade: Color = Color(0.52, 0.5, 0.46)
 # Radius (relative to a cell) of the largest tier; smaller tiers scale down.
@@ -98,11 +86,27 @@ func _ready() -> void:
 	_noise.seed = noise_seed
 
 func _draw() -> void:
-	var cs: int = get_parent().cell_size
-	for m in mountains:
-		_draw_mountain(m.x, m.y, maxi(1, m.z), cs)
-	_scatter_boulders(cs)
-	_scatter_trees(cs)
+	var map := get_parent()
+	var world: WorldData = map.world
+	if world == null:
+		return
+	var cs: int = map.cell_size
+	# Big resources: ponds (under everything), then mountains.
+	for r in world.resources:
+		if r.type == "pond":
+			_draw_pond(r.cell.x, r.cell.y, maxi(1, int(r.size)), cs)
+	for r in world.resources:
+		if r.type == "mountain":
+			_draw_mountain(r.cell.x, r.cell.y, maxi(1, int(r.size)), cs)
+	# Per-cell scatter: boulders under trees.
+	for y in range(world.rows):
+		for x in range(world.cols):
+			if world.cell_kind[y * world.cols + x] == WorldData.Kind.BOULDER:
+				_draw_boulder_at(x, y, cs)
+	for y in range(world.rows):
+		for x in range(world.cols):
+			if world.cell_kind[y * world.cols + x] == WorldData.Kind.TREE:
+				_draw_trees_at(x, y, cs)
 
 func _draw_mountain(cx: int, cy: int, w: int, cs: int) -> void:
 	var fcs := float(cs)
@@ -150,25 +154,54 @@ func _draw_snow(peak: Vector2, base_y: float, fcs: float) -> void:
 	draw_colored_polygon(PackedVector2Array([peak, sr, sl]), snow_color)
 	_pencil(PackedVector2Array([sl, sr]), line_color, line_width * 0.6, peak.x + peak.y)
 
+# Still pond centred on a cell: an irregular flat ellipse, a darker deep area,
+# a few ripple strokes, and a pencil bank outline. The water-drawing helper here
+# is meant to be reused by rivers later.
+func _draw_pond(cx: int, cy: int, w: int, cs: int) -> void:
+	var fcs := float(cs)
+	var center := Vector2((float(cx) + 0.5) * fcs, (float(cy) + 0.5) * fcs)
+	var rx := float(w) * fcs * 0.6
+	var ry := rx * 0.62
+	var salt := cx * 91 + cy * 7
+	var n := 16
+	# Bank shape (irregular ellipse).
+	var pts := PackedVector2Array()
+	for i in range(n):
+		var a := TAU * float(i) / float(n)
+		var jit := 0.88 + 0.2 * _rand01(salt, i, 300)
+		pts.append(center + Vector2(cos(a) * rx, sin(a) * ry) * jit)
+	_fill(pts, water_color)
+	# Deeper water toward the centre.
+	var dc := center + Vector2(0, ry * 0.12)
+	var deep := PackedVector2Array()
+	for i in range(n):
+		var a := TAU * float(i) / float(n)
+		deep.append(dc + Vector2(cos(a) * rx * 0.62, sin(a) * ry * 0.62))
+	_fill(deep, water_deep)
+	# Ripple strokes in the upper half.
+	for k in range(3):
+		var yy := center.y + ry * (-0.32 + 0.34 * float(k))
+		var rw := rx * (0.46 - 0.09 * float(k))
+		_pencil(PackedVector2Array([
+			Vector2(center.x - rw, yy), Vector2(center.x, yy - fcs * 0.04),
+			Vector2(center.x + rw, yy)]), ripple_color, line_width * 0.5, float(salt) + 50.0 + float(k))
+	# Bank outline.
+	var ol := pts.duplicate()
+	ol.append(pts[0])
+	_pencil(ol, line_color, line_width, float(salt))
+
 # Scatters trees deterministically (like grass): random cells get 1-3 trees at
 # random spots and sizes. Trees are positioned by trunk base, so foliage spills
 # freely past the cell edges.
-func _scatter_trees(cs: int) -> void:
+func _draw_trees_at(tx: int, ty: int, cs: int) -> void:
 	var fcs := float(cs)
-	var map := get_parent()
-	var cols: int = map.cols
-	var rows: int = map.rows
-	for ty in range(rows):
-		for tx in range(cols):
-			if _rand01(tx, ty, tree_seed) >= tree_density:
-				continue
-			var count := 1 + int(_rand01(tx, ty, tree_seed + 1) * 3.0)
-			for k in range(count):
-				var bx := (float(tx) + _rand01(tx, ty, tree_seed + 10 + k)) * fcs
-				var by := (float(ty) + 0.4 + 0.55 * _rand01(tx, ty, tree_seed + 20 + k)) * fcs
-				var unit := fcs * (0.55 + 0.55 * _rand01(tx, ty, tree_seed + 30 + k))
-				var salt := tx * 131 + ty * 17 + k * 7
-				_draw_broadleaf(Vector2(bx, by), unit, salt)
+	var count := 1 + int(_rand01(tx, ty, TREE_SALT + 1) * 3.0)
+	for k in range(count):
+		var bx := (float(tx) + _rand01(tx, ty, TREE_SALT + 10 + k)) * fcs
+		var by := (float(ty) + 0.4 + 0.55 * _rand01(tx, ty, TREE_SALT + 20 + k)) * fcs
+		var unit := fcs * (0.55 + 0.55 * _rand01(tx, ty, TREE_SALT + 30 + k))
+		var salt := tx * 131 + ty * 17 + k * 7
+		_draw_broadleaf(Vector2(bx, by), unit, salt)
 
 # Round broadleaf tree at trunk base `base`, sized by `unit` (px): tapered trunk
 # + a scalloped (lobed) canopy with the lower half shaded for volume.
@@ -201,21 +234,14 @@ func _draw_broadleaf(base: Vector2, unit: float, salt: int) -> void:
 
 # Scatters boulders like trees: random cells, random spot, one of 3 size tiers
 # (small/medium/large) — same shape, size only.
-func _scatter_boulders(cs: int) -> void:
+func _draw_boulder_at(bx_cell: int, by_cell: int, cs: int) -> void:
 	var fcs := float(cs)
-	var map := get_parent()
-	var cols: int = map.cols
-	var rows: int = map.rows
 	var tier_mult: Array[float] = [0.45, 0.7, 1.0]
-	for by_cell in range(rows):
-		for bx_cell in range(cols):
-			if _rand01(bx_cell, by_cell, boulder_seed) >= boulder_density:
-				continue
-			var tier := int(_rand01(bx_cell, by_cell, boulder_seed + 1) * 3.0)
-			var bx := (float(bx_cell) + 0.2 + 0.6 * _rand01(bx_cell, by_cell, boulder_seed + 2)) * fcs
-			var by := (float(by_cell) + 0.45 + 0.45 * _rand01(bx_cell, by_cell, boulder_seed + 3)) * fcs
-			var unit := fcs * boulder_size * tier_mult[tier]
-			_draw_boulder(Vector2(bx, by), unit, bx_cell * 53 + by_cell * 11)
+	var tier := int(_rand01(bx_cell, by_cell, BOULDER_SALT + 1) * 3.0)
+	var bx := (float(bx_cell) + 0.2 + 0.6 * _rand01(bx_cell, by_cell, BOULDER_SALT + 2)) * fcs
+	var by := (float(by_cell) + 0.45 + 0.45 * _rand01(bx_cell, by_cell, BOULDER_SALT + 3)) * fcs
+	var unit := fcs * boulder_size * tier_mult[tier]
+	_draw_boulder(Vector2(bx, by), unit, bx_cell * 53 + by_cell * 11)
 
 # One boulder at base `base`, radius `r`: an irregular squashed rock with a
 # shaded lower half, a crack, and a pencil outline.

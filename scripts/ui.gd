@@ -12,6 +12,7 @@ const SHEET_MARGIN := 14.0
 
 @onready var _sheet: SketchBox = $Root/BottomSheet
 @onready var _name: Label = $Root/BottomSheet/Margin/VBox/Header/HeaderText/Name
+@onready var _level: Label = $Root/BottomSheet/Margin/VBox/Header/HeaderText/Level
 @onready var _close: Button = $Root/BottomSheet/Margin/VBox/Header/CloseButton
 @onready var _upgrade: Button = $Root/BottomSheet/Margin/VBox/Upgrade
 @onready var _qty_x1: Button = $Root/BottomSheet/Margin/VBox/QtyRow/QtyX1
@@ -33,8 +34,27 @@ func _ready() -> void:
 	_sheet.offset_bottom = SHEET_H
 
 func _on_tile_selected(x: int, y: int) -> void:
-	_name.text = "Tile (%d, %d)" % [x, y]
+	var world: WorldData = get_parent().world
+	var key := world.label_at(x, y) if world != null else "empty"
+	_name.text = _display_name(key)
+	_level.text = "Tile (%d, %d)" % [x, y]
 	show_sheet()
+
+func _display_name(key: String) -> String:
+	match key:
+		"mountain":
+			return "Mountain"
+		"pond":
+			return "Pond"
+		"tree":
+			return "Forest"
+		"boulder":
+			return "Boulder"
+		"grass":
+			return "Grassland"
+		"pebble":
+			return "Pebbles"
+	return "Empty plot"
 
 func show_sheet() -> void:
 	if _open:
@@ -47,6 +67,7 @@ func hide_sheet() -> void:
 		return
 	_open = false
 	_slide(0.0, SHEET_H)
+	get_parent().clear_selection()
 
 func _slide(top: float, bottom: float) -> void:
 	if _tween and _tween.is_running():

@@ -1,28 +1,14 @@
 extends Node2D
 class_name TileDecorator
 
-## Scatters hand-drawn grass tufts and pebbles across the parent Map's grid.
-## Placement is deterministic (hashed per cell) and drawn once, so — like the
-## grid itself — it is cached and never re-run while panning or zooming.
-## Grid dimensions (cols, rows, cell_size) are read from the parent Map node,
-## so this node must be a direct child of it.
+## Draws the grass / pebble scatter recorded in the parent Map's `world`
+## (WorldData). Which cells get what is decided by the world generator; this node
+## only reads `cell_kind` and draws the look, deriving each tuft's detail by
+## hashing the cell. Cached & redrawn only when the world changes. Child of Map.
 
 @export var decorate: bool = true:
 	set(value):
 		decorate = value
-		queue_redraw()
-@export var deco_seed: int = 7:
-	set(value):
-		deco_seed = value
-		queue_redraw()
-# Fraction of cells that get a grass tuft / a pebble (the rest stay empty).
-@export_range(0.0, 1.0) var grass_density: float = 0.22:
-	set(value):
-		grass_density = value
-		queue_redraw()
-@export_range(0.0, 1.0) var pebble_density: float = 0.07:
-	set(value):
-		pebble_density = value
 		queue_redraw()
 # Overall size of grass tufts relative to a cell.
 @export_range(0.2, 1.5) var grass_scale: float = 0.7:
@@ -46,17 +32,17 @@ class_name TileDecorator
 func _draw() -> void:
 	if not decorate:
 		return
-	var map := get_parent()
-	var cols: int = map.cols
-	var rows: int = map.rows
-	var cell_size: int = map.cell_size
-	for y in range(rows):
-		for x in range(cols):
-			var roll := _rand01(x, y, deco_seed)
-			if roll < pebble_density:
-				_draw_pebble(x, y, cell_size)
-			elif roll < pebble_density + grass_density:
-				_draw_grass(x, y, cell_size)
+	var world: WorldData = get_parent().world
+	if world == null:
+		return
+	var cell_size: int = get_parent().cell_size
+	for y in range(world.rows):
+		for x in range(world.cols):
+			match world.cell_kind[y * world.cols + x]:
+				WorldData.Kind.GRASS:
+					_draw_grass(x, y, cell_size)
+				WorldData.Kind.PEBBLE:
+					_draw_pebble(x, y, cell_size)
 
 # A fan-shaped tuft: blades radiate from one base point, the centre blade tallest
 # and the side ones shorter, each bowing slightly outward.
