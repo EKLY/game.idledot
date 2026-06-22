@@ -11,9 +11,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.ai/backlog.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/backlog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/map.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/map.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/ui.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ui.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,22 +36,22 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000000000000187" />
-      <entry key="S2" value="1.0006498022529704" />
-      <entry key="S5" value="1.1042039031040398" />
-      <entry key="S10" value="1.657754342180763" />
-      <entry key="S30" value="3.4887257221679504" />
-      <entry key="S60" value="4.705899900003768" />
-      <entry key="M2" value="6.174502087470774" />
-      <entry key="M5" value="9.979430723588383" />
-      <entry key="M10" value="15.00768803354185" />
-      <entry key="M15" value="18.323388088473756" />
-      <entry key="M30" value="23.465206837441112" />
-      <entry key="H1" value="27.157427275722704" />
-      <entry key="H2" value="29.408876113830235" />
-      <entry key="H4" value="30.658115402995737" />
-      <entry key="D1" value="31.76955753247795" />
-      <entry key="W1" value="31.966908281414074" />
+      <entry key="MS500" value="1.0001070245147807" />
+      <entry key="S2" value="1.1209046879481146" />
+      <entry key="S5" value="1.7126367976232455" />
+      <entry key="S10" value="2.422811099795173" />
+      <entry key="S30" value="3.3259336970026205" />
+      <entry key="S60" value="3.6397060778635484" />
+      <entry key="M2" value="3.8174883376864046" />
+      <entry key="M5" value="4.03255790371548" />
+      <entry key="M10" value="4.291364513613788" />
+      <entry key="M15" value="4.453573413681438" />
+      <entry key="M30" value="4.904443552567619" />
+      <entry key="H1" value="7.500038434005974" />
+      <entry key="H2" value="14.260022983244546" />
+      <entry key="H4" value="22.500546088480277" />
+      <entry key="D1" value="34.69031603957223" />
+      <entry key="W1" value="37.50549033868543" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -73,23 +73,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9075191553171609" />
-      <entry key="MS500" value="0.9807790039885699" />
-      <entry key="S2" value="0.9958067819518153" />
-      <entry key="S5" value="1.1020814818311986" />
-      <entry key="S10" value="1.6561873433940733" />
-      <entry key="S30" value="3.487629618775882" />
-      <entry key="S60" value="4.705153583396432" />
-      <entry key="M2" value="6.173999918224975" />
-      <entry key="M5" value="9.979085498863872" />
-      <entry key="M10" value="15.007417455054313" />
-      <entry key="M15" value="18.323162883381993" />
-      <entry key="M30" value="23.46505742370991" />
-      <entry key="H1" value="27.157338518380282" />
-      <entry key="H2" value="29.40882728348346" />
-      <entry key="H4" value="30.65808972637049" />
-      <entry key="D1" value="31.76955306342374" />
-      <entry key="W1" value="31.96690763813246" />
+      <entry key="MS100" value="0.8827029962906549" />
+      <entry key="MS500" value="0.9754599932498748" />
+      <entry key="S2" value="1.1139656376275862" />
+      <entry key="S5" value="1.7084024564327227" />
+      <entry key="S10" value="2.419806657922822" />
+      <entry key="S30" value="3.324553662734475" />
+      <entry key="S60" value="3.638950112803171" />
+      <entry key="M2" value="3.817091638710415" />
+      <entry key="M5" value="4.032389982368821" />
+      <entry key="M10" value="4.291274906447908" />
+      <entry key="M15" value="4.453511316392036" />
+      <entry key="M30" value="4.904409473131615" />
+      <entry key="H1" value="7.500012990372627" />
+      <entry key="H2" value="14.259999101074541" />
+      <entry key="H4" value="22.50052724874" />
+      <entry key="D1" value="34.69031118158252" />
+      <entry key="W1" value="37.50548958770882" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -297,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1781867864843</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Add reusable &quot;SketchBox&quot; component for hand-drawn UI elements&#10;&#10;- Implemented `SketchBox` script for creating customizable pencil-sketch-styled UI frames, including rounded borders, shadows, and paper textures.&#10;- Replaced top bar and bottom sheet in the map scene with `SketchBox`, ensuring consistent visual style.&#10;- Adjusted margins and constants across the UI for seamless integration.">
+      <option name="closed" value="true" />
+      <created>1782105992309</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1782105992309</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -310,7 +318,8 @@
     <MESSAGE value="Add introductory scripts and AI_SPEC.md&#10;&#10;- Implement `welcome.gd` script to handle scene transitions with auto-advance and input interactions.&#10;- Add `AI_SPEC.md`, defining comprehensive project rules, architecture, and gameplay design for the mobile idle game.&#10;- Include initial IDEA project files (`encodings.xml`, `workspace.xml`)." />
     <MESSAGE value="Remove unused scripts, JSON configs, and assets related to the building economy system." />
     <MESSAGE value="Add map UI mockup and enhance grid functionality&#10;&#10;- Introduced `CanvasLayer` with fixed top bar and bottom sheet UI components. &#10;- Configured `tile_selected` signal to trigger bottom sheet, displaying placeholder tile details.  &#10;- Expanded map to 100x100 tiles with zoom and panning implemented for both mouse and touch inputs.&#10;- Optimized grid rendering with procedural pencil-sketch effect." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add map UI mockup and enhance grid functionality&#10;&#10;- Introduced `CanvasLayer` with fixed top bar and bottom sheet UI components. &#10;- Configured `tile_selected` signal to trigger bottom sheet, displaying placeholder tile details.  &#10;- Expanded map to 100x100 tiles with zoom and panning implemented for both mouse and touch inputs.&#10;- Optimized grid rendering with procedural pencil-sketch effect." />
+    <MESSAGE value="Add reusable &quot;SketchBox&quot; component for hand-drawn UI elements&#10;&#10;- Implemented `SketchBox` script for creating customizable pencil-sketch-styled UI frames, including rounded borders, shadows, and paper textures.&#10;- Replaced top bar and bottom sheet in the map scene with `SketchBox`, ensuring consistent visual style.&#10;- Adjusted margins and constants across the UI for seamless integration." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add reusable &quot;SketchBox&quot; component for hand-drawn UI elements&#10;&#10;- Implemented `SketchBox` script for creating customizable pencil-sketch-styled UI frames, including rounded borders, shadows, and paper textures.&#10;- Replaced top bar and bottom sheet in the map scene with `SketchBox`, ensuring consistent visual style.&#10;- Adjusted margins and constants across the UI for seamless integration." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
