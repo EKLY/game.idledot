@@ -13,8 +13,15 @@
     <list default="true" id="75a00d7a-ee66-45f6-99a5-6d5e5478d150" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.ai/backlog.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/backlog.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.ai/memory.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/memory.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ai/plan-buildings.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/plan-buildings.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.ai/spec.md" beforeDir="false" afterPath="$PROJECT_DIR$/.ai/spec.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" afterPath="$PROJECT_DIR$/project.godot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/map.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/map.tscn" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/map.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/map.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ui.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ui.gd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/world_data.gd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/world_data.gd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +29,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="131" />
+    <option name="cachedIndexableFilesCount" value="144" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -338,7 +345,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782126119351</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Draft building and road placement plan&#10;&#10;- Created `.ai/plan-buildings.md` to outline data model and implementation steps for buildings and roads in the game.&#10;- Defined key features such as terrain validation, placeholder rendering, and manual road placement.&#10;- Documented a phased approach for adding A* auto-routing and sprite rendering in the future.">
+      <option name="closed" value="true" />
+      <created>1782127352911</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1782127352911</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
@@ -357,7 +372,8 @@
     <MESSAGE value="Add reusable centered dialog with backdrop and close functionality&#10;&#10;- Implemented `CenterDialog` component" />
     <MESSAGE value=".&#10;- Added a &quot;Settings&quot; button to the top bar, triggering the dialog with a title.&#10;- Updated the map scene to integrate the new dialog system." />
     <MESSAGE value="Freeze map interaction when dialog is active&#10;&#10;- Added `_pan_enabled` to control map panning and zooming.&#10;- Introduced `set_pan_enabled` to toggle map interaction from parent nodes.&#10;- Updated `dialog.gd` to disable/enable map input when dialogs are opened/closed.&#10;- Centered dialog display using updated panel anchors in `map.tscn`." />
-    <option name="LAST_COMMIT_MESSAGE" value="Freeze map interaction when dialog is active&#10;&#10;- Added `_pan_enabled` to control map panning and zooming.&#10;- Introduced `set_pan_enabled` to toggle map interaction from parent nodes.&#10;- Updated `dialog.gd` to disable/enable map input when dialogs are opened/closed.&#10;- Centered dialog display using updated panel anchors in `map.tscn`." />
+    <MESSAGE value="Draft building and road placement plan&#10;&#10;- Created `.ai/plan-buildings.md` to outline data model and implementation steps for buildings and roads in the game.&#10;- Defined key features such as terrain validation, placeholder rendering, and manual road placement.&#10;- Documented a phased approach for adding A* auto-routing and sprite rendering in the future." />
+    <option name="LAST_COMMIT_MESSAGE" value="Draft building and road placement plan&#10;&#10;- Created `.ai/plan-buildings.md` to outline data model and implementation steps for buildings and roads in the game.&#10;- Defined key features such as terrain validation, placeholder rendering, and manual road placement.&#10;- Documented a phased approach for adding A* auto-routing and sprite rendering in the future." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

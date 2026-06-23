@@ -9,5 +9,6 @@
 - River terrain — deferred; the path-based curve looked off, retry later (maybe cell-based)
 - Dialog open/close animation (fade/scale) — optional polish
 - Serialise WorldData to JSON (user://) when save/load lands
+- Tune the production-chain balance (rates / inputs / pacing in `config/buildings.json`) once economy tick + build mode are complete — current values are placeholders
 
 (Buildings & roads are now tracked in `.ai/plan-buildings.md`, not here.)

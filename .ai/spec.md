@@ -32,7 +32,7 @@ Build a **mobile-only** idle/incremental economic game with a **Thai cultural sa
 
 Core systems:
 
-- Idle economy (exponential growth)
+- Idle production-chain economy (terrain → extract → process → sell)
 - Offline progress
 - Prestige loop
 - Rewarded ads (optional, no forced ads)
@@ -163,21 +163,43 @@ Reset partial progress → gain permanent currency → accelerate next run
 
 ## Economy Model (Must-follow)
 
-### Resources (3-layer)
+### Currencies (3-layer)
 
-- Money: primary currency.
+- Money: primary currency, earned only at the tail of the production chain.
 - Trend: global multiplier with decay.
 - Prestige currency: permanent upgrades.
 
-No additional resource types in MVP.
+### Material resources (production chain)
+
+Colonists-style chain: terrain yields raw materials, buildings transform them tier
+by tier until the final tier sells for Money. Each material has a single global
+stockpile (a running balance, not per-building).
+
+- Raw (extracted from terrain): `ore` (mountain), `log` (tree), `fish` (pond), `crop` (open land)
+- Processed: `metal` (ore), `plank` (log), `food` (fish + crop)
+- Manufactured: `goods` (metal + plank)
+
+New materials are added by extending `buildings.json` + the stockpile, never
+hard-coded in UI/logic.
+
+### Production model
+
+- A building runs a tick only when its `inputs` are in the stockpile; it consumes
+  inputs and adds outputs at its configured rate.
+- Throughput is input-constrained: a downstream building idles (bottleneck) when
+  its inputs run dry — the map must surface this (see Visual status cues).
+- Extractors bind to terrain: they must be placed adjacent to their resource
+  (mine ↔ mountain, logging ↔ tree, fishing ↔ pond); farms sit on open land.
+- Retail buildings output `money`; PR buildings output `trend`.
 
 ### Formulas (single source of truth)
 
 All production and costs must be computed from config.
 
-- Building upgrade cost: `cost(level) = baseCost × (costRate ^ level)`
-- Building output: `output(level) = baseOutput × (outputRate ^ level)`
-- Global income per second: `incomePerSec = Σ output(building_i) × trendMultiplier × globalBonus × boosts`
+- Building cost: `cost(level) = baseCost × (costRate ^ level)`
+- Building rate: `rate(level) = baseRate × (rateRate ^ level)` (units/sec, per input and output)
+- Effective output: full `rate` only while inputs last; otherwise scaled to what the stockpile can feed.
+- Money per second: `Σ output(retail_i) × trendMultiplier × globalBonus × boosts`
 
 ### Pacing targets (initial defaults)
 
@@ -201,12 +223,14 @@ All production and costs must be computed from config.
 
 ## Buildings & Content Structure
 
-### Archetypes
+### Archetypes (production-chain tiers)
 
-- Stable income buildings (steady)
-- Trend-driven buildings (volatile; higher ceiling)
-- Infrastructure buildings (reduce friction; increase efficiency)
-- PR/Event buildings (increase trend)
+- Extractors — pull raw materials from adjacent terrain (mine / logging / fishing / farm)
+- Processors — refine raw into intermediate goods (smelter / sawmill / food plant)
+- Manufacturers — combine intermediates into higher goods (assembly)
+- Retail — sell final goods for Money (stall / mall)
+- Infrastructure — reduce friction / increase efficiency (permit office)
+- PR/Event — increase Trend (promo booth)
 
 ### MVP building count
 

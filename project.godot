@@ -21,6 +21,10 @@ window/size/viewport_height=960
 window/stretch/mode="canvas_items"
 window/handheld/orientation="portrait"
 
+[gui]
+
+theme/custom_font="res://assets/fonts/noto.ttf"
+
 [rendering]
 
 renderer/rendering_method="mobile"

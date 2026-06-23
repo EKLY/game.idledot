@@ -13,7 +13,9 @@ extends Node2D
 # Seed + densities/counts the map is generated from. Resources & scatter layout
 # are baked into `world` once on _ready; renderers read it (see WorldData).
 @export var world_seed: int = 2024
-@export var mountain_count: int = 4
+@export var mountain_clusters: int = 3
+@export var mountain_per_cluster: int = 6
+@export var mountain_spread: int = 4
 @export var pond_count: int = 3
 @export_range(0.0, 1.0) var grass_density: float = 0.22
 @export_range(0.0, 1.0) var pebble_density: float = 0.07
@@ -64,6 +66,12 @@ var _pan_enabled := true
 var _drag_moved := 0.0
 var _touches := {}
 var _pinch_dist := 0.0
+# A screen rect (set by the UI for the open bottom sheet) whose gestures must NOT
+# reach the map. Touches that press inside it are tracked so their drag/release are
+# ignored too — keeping the map from panning under the panel.
+var _ui_block_rect := Rect2()
+var _blocked_touches := {}
+var _mouse_blocked := false
 
 ## The generated world (resources + per-cell scatter). Read by Terrain / TileDecorator.
 var world: WorldData
@@ -72,6 +80,22 @@ var world: WorldData
 signal tile_selected(tile_x: int, tile_y: int)
 ## Emitted when the current selection is cleared (e.g. the panel is closed).
 signal tile_deselected
+## Emitted when build-mode state changes (ghost moved, building placed, mode toggled).
+signal build_changed
+
+## Building catalog, loaded once; placed buildings reference entries by id.
+var catalog: Array[Dictionary] = []
+var catalog_by_id: Dictionary = {}
+
+## TEMP placeholder for the player's money (matches the top-bar mockup) — the build
+## list shows only affordable buildings. Replace when the Economy/GameState lands.
+var money: float = 1200.0
+
+## Build mode (placement). build_active=false means normal tap-to-select.
+var build_active := false
+var build_entry: Dictionary = {}
+var build_ghost := Vector2i(-1, -1)
+var build_valid := false
 
 func _ready() -> void:
 	# Paint the viewport background the same as the grid paper, so the area shown
@@ -80,6 +104,24 @@ func _ready() -> void:
 	_noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	_noise.frequency = 1.0
 	_noise.seed = 1337
+	_setup_camera()
+	# Generate the world once, then ask the drawing children to render from it.
+	# (Children _ready before the parent, so they draw empty until this runs.)
+	world = WorldData.generate(world_seed, cols, rows, _gen_config())
+	catalog = BuildingCatalog.load_all()
+	catalog_by_id.clear()
+	for e in catalog:
+		catalog_by_id[e.id] = e
+	for c in get_children():
+		if c is CanvasItem:
+			c.queue_redraw()
+
+func _map_size() -> Vector2:
+	return Vector2(cols * cell_size, rows * cell_size)
+
+# Centres the camera on the map and recomputes its pan limits (used on first load
+# and whenever the map is regenerated at a new size).
+func _setup_camera() -> void:
 	var ms := _map_size()
 	_camera.position = ms * 0.5
 	_camera.zoom = Vector2.ONE
@@ -92,19 +134,31 @@ func _ready() -> void:
 	_camera.limit_bottom = int(ms.y + over_max)
 	_camera.make_current()
 	_clamp_camera()
-	# Generate the world once, then ask the drawing children to render from it.
-	# (Children _ready before the parent, so they draw empty until this runs.)
-	world = WorldData.generate(world_seed, cols, rows, {
-		"mountain_count": mountain_count, "pond_count": pond_count,
+
+func _gen_config() -> Dictionary:
+	return {
+		"mountain_clusters": mountain_clusters,
+		"mountain_per_cluster": mountain_per_cluster,
+		"mountain_spread": mountain_spread,
+		"pond_count": pond_count,
 		"tree_density": tree_density, "boulder_density": boulder_density,
 		"grass_density": grass_density, "pebble_density": pebble_density,
-	})
+	}
+
+# Rebuilds the whole world at a new size + seed (placed buildings/roads live in
+# `world`, so they reset too) and redraws every layer. Driven by the Settings dialog.
+func regenerate_map(p_cols: int, p_rows: int, p_seed: int) -> void:
+	exit_build_mode()
+	clear_selection()
+	cols = p_cols
+	rows = p_rows
+	world_seed = p_seed
+	world = WorldData.generate(world_seed, cols, rows, _gen_config())
+	_setup_camera()
+	queue_redraw()
 	for c in get_children():
 		if c is CanvasItem:
 			c.queue_redraw()
-
-func _map_size() -> Vector2:
-	return Vector2(cols * cell_size, rows * cell_size)
 
 func _draw() -> void:
 	var ms := _map_size()
@@ -178,34 +232,61 @@ func set_pan_enabled(value: bool) -> void:
 		_touches.clear()
 		_pinch_dist = 0.0
 
+## The UI marks the open bottom sheet's screen rect so gestures over the panel are
+## swallowed instead of moving the map. Pass an empty Rect2 to clear it.
+func set_ui_block_rect(r: Rect2) -> void:
+	_ui_block_rect = r
+
+func _in_block(pos: Vector2) -> bool:
+	return _ui_block_rect.has_point(pos)
+
 func _handle_mouse_button(event: InputEventMouseButton) -> void:
 	if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
+		if _in_block(event.position):
+			return
 		_zoom_at(event.position, zoom_step)
 	elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
+		if _in_block(event.position):
+			return
 		_zoom_at(event.position, 1.0 / zoom_step)
 	elif event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
+			if _in_block(event.position):
+				_mouse_blocked = true
+				return
+			_mouse_blocked = false
 			_dragging = true
 			_drag_moved = 0.0
 		else:
+			if _mouse_blocked:
+				_mouse_blocked = false
+				return
 			_dragging = false
 			if _drag_moved < tap_threshold:
-				_select_at(_screen_to_world(event.position))
+				_tap_at(_screen_to_world(event.position))
 
 func _handle_touch(event: InputEventScreenTouch) -> void:
 	if event.pressed:
+		if _in_block(event.position):
+			_blocked_touches[event.index] = true
+			return
 		_touches[event.index] = event.position
 		if _touches.size() == 1:
 			_drag_moved = 0.0
 	else:
+		if _blocked_touches.has(event.index):
+			_blocked_touches.erase(event.index)
+			return
 		var was_last := _touches.size() <= 1
 		_touches.erase(event.index)
 		if was_last and _drag_moved < tap_threshold:
-			_select_at(_screen_to_world(event.position))
+			_tap_at(_screen_to_world(event.position))
 		if _touches.size() < 2:
 			_pinch_dist = 0.0
 
 func _handle_touch_drag(event: InputEventScreenDrag) -> void:
+	if _blocked_touches.has(event.index):
+		return
 	_touches[event.index] = event.position
 	if _touches.size() >= 2:
 		_pinch_update()
@@ -262,3 +343,66 @@ func _select_at(world_pos: Vector2) -> void:
 
 func clear_selection() -> void:
 	tile_deselected.emit()
+
+# --- Build mode (placement) -----------------------------------------------------
+
+# A tap either repositions the build ghost (build mode) or selects a tile.
+func _tap_at(world_pos: Vector2) -> void:
+	if build_active:
+		var c := _world_to_cell(world_pos)
+		if c.x >= 0 and c.y >= 0 and c.x < cols and c.y < rows:
+			_set_ghost(c)
+		return
+	_select_at(world_pos)
+
+func _world_to_cell(world_pos: Vector2) -> Vector2i:
+	return Vector2i(int(floor(world_pos.x / cell_size)), int(floor(world_pos.y / cell_size)))
+
+# Enters build mode with `entry` (a catalog dict). The ghost starts on `start_cell`
+# (e.g. the tile the player tapped), or the screen centre if none is given.
+func enter_build_mode(entry: Dictionary, start_cell := Vector2i(-1, -1)) -> void:
+	build_active = true
+	build_entry = entry
+	var cell := start_cell
+	if cell.x < 0:
+		cell = _world_to_cell(_screen_to_world(get_viewport().get_visible_rect().size * 0.5))
+	_set_ghost(cell)
+
+# Swaps the building type without moving the ghost (cycling in the build bar).
+func set_build_entry(entry: Dictionary) -> void:
+	build_entry = entry
+	_recompute_valid()
+	build_changed.emit()
+
+func exit_build_mode() -> void:
+	build_active = false
+	build_entry = {}
+	build_ghost = Vector2i(-1, -1)
+	build_changed.emit()
+
+# Places the current building at the ghost cell if valid, staying in build mode so
+# the player can place more (the ghost re-validates — its cell is now occupied).
+func confirm_build() -> bool:
+	if not build_active or not build_valid:
+		return false
+	var ok := world.place_building(build_entry.id, build_ghost, build_entry.size)
+	if ok:
+		_recompute_valid()
+		build_changed.emit()
+	return ok
+
+func _set_ghost(cell: Vector2i) -> void:
+	build_ghost = cell
+	_recompute_valid()
+	build_changed.emit()
+
+# Valid = footprint placeable, plus terrain adjacency for extractors (`requires`).
+func _recompute_valid() -> void:
+	if not build_active or build_entry.is_empty():
+		build_valid = false
+		return
+	var size: Vector2i = build_entry.size
+	var ok := world.can_place(build_ghost, size)
+	if ok and String(build_entry.requires) != "":
+		ok = world.is_adjacent_to_terrain(build_ghost, size, build_entry.requires)
+	build_valid = ok

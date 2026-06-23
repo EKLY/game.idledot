@@ -20,7 +20,20 @@
 
 ## Current Focus / Next
 
-- Next: **Buildings & Roads** — follow `.ai/plan-buildings.md` (start Step 1: WorldData buildings/roads + `can_place`). Placeholder render first, roads manual+validate first, sprites later.
+- Economy pivoted to a **production chain** (Colonists-style): terrain → extract →
+  process → sell. Spec Economy Model updated; the "no extra resources" rule was
+  dropped. Materials: ore/log/fish/crop → metal/plank/food → goods → money.
+  Extractors bind to **adjacent** terrain (mine↔mountain, logging↔tree, fishing↔pond);
+  farms sit on open land.
+- Buildings & Roads (`.ai/plan-buildings.md`):
+  - Step 1 DONE — WorldData has `buildings`/`building_cells`/`roads` +
+    `can_place`/`place_building`/`place_road`/`remove_at`/`is_adjacent_to_terrain`.
+  - Step 2 DONE — `config/buildings.json` (12-building chain) + `BuildingCatalog`
+    loader (`scripts/building_catalog.gd`).
+  - Next: **Step 3** — placement + build mode (ghost preview, `can_place` +
+    extractor adjacency, confirm to place).
+- TEMP `_selftest_buildings()` in `map.gd` prints catalog + data-model checks to the
+  Output panel (remove when the Step 3-4 build UI / render node land).
 
 ## Knowledge Base
 

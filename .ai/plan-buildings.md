@@ -16,6 +16,9 @@ later; roads are drawn manually first, with A* auto-routing as a later add-on.
 - Roads: **manual + validate first** (click/drag cells; can't cross obstacles).
   A* auto-route is a later phase.
 - Sprites: **none yet** — keep a clean seam so art drops in later.
+- Economy: **production chain** (see spec Economy Model) — terrain → extract →
+  process → sell. Extractors bind to **adjacent** terrain (mine↔mountain,
+  logging↔tree, fishing↔pond); farms sit on open land.
 
 ## Approach
 
@@ -32,19 +35,22 @@ from a JSON catalog (config-driven, per spec).
    ({type, origin:Vector2i, size:Vector2i}) and `roads` (Dictionary/Set of
    Vector2i). Helpers: `can_place(origin, size) -> bool` (all footprint cells
    in-bounds, not occupied, cell_kind not TREE/BOULDER and not a resource),
-   `place_building(...)`, `place_road(cell)`, `remove_at(cell)`.
+   `place_building(...)`, `place_road(cell)`, `remove_at(cell)`,
+   `is_adjacent_to_terrain(origin, size, terrain)` (extractor binding).
    -> verify: a temp hard-coded building shows + reserves its cells (scatter
    avoids them).
 
 2. **Building catalog (config)** — `config/buildings.json`: id, name, size (w x h),
-   placeholder colour (later: sprite path, cost, income). Load directly for now;
-   formalise into a ConfigService when economy lands.
+   placeholder colour, `tier`, `requires` (terrain for extractors), `inputs` /
+   `outputs` (the production chain). Load directly for now; formalise into a
+   ConfigService when economy lands. (later: sprite path, cost)
    -> verify: catalog loads; build UI lists entries.
 
 3. **Placement + build mode** — UI build button -> enter build mode -> ghost
-   follows the tapped/hovered cell, tinted valid/invalid via `can_place` -> tap
-   confirms (place_building) -> exit. Cancel via back/dialog. Reuse the
-   `set_pan_enabled` pattern so taps mean "place", not "select".
+   follows the tapped/hovered cell, tinted valid/invalid via `can_place`
+   (plus `is_adjacent_to_terrain` for extractors' `requires`) -> tap confirms
+   (place_building) -> exit. Cancel via back/dialog. Reuse the `set_pan_enabled`
+   pattern so taps mean "place", not "select".
    -> verify: place on free cells, blocked on obstacles, occupancy updates.
 
 4. **Building render node** — draws each building footprint as a flat coloured

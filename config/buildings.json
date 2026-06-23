@@ -1,0 +1,140 @@
+[
+  {
+    "id": "mine",
+    "name": "สัมปทานเหมือง",
+    "size": [1, 1],
+    "color": "#8d8378",
+    "tier": "extract",
+    "requires": "mountain",
+    "cost": 60,
+    "inputs": [],
+    "outputs": [{ "resource": "ore", "rate": 1.0 }]
+  },
+  {
+    "id": "logging_camp",
+    "name": "ค่ายสัมปทานป่า",
+    "size": [1, 1],
+    "color": "#7a9b5e",
+    "tier": "extract",
+    "requires": "tree",
+    "cost": 60,
+    "inputs": [],
+    "outputs": [{ "resource": "log", "rate": 1.0 }]
+  },
+  {
+    "id": "fishing_wharf",
+    "name": "แพประมงพาณิชย์",
+    "size": [1, 1],
+    "color": "#4ba3d9",
+    "tier": "extract",
+    "requires": "pond",
+    "cost": 80,
+    "inputs": [],
+    "outputs": [{ "resource": "fish", "rate": 1.0 }]
+  },
+  {
+    "id": "contract_farm",
+    "name": "ฟาร์มพันธสัญญา",
+    "size": [2, 2],
+    "color": "#cda84b",
+    "tier": "extract",
+    "requires": "",
+    "cost": 120,
+    "inputs": [],
+    "outputs": [{ "resource": "crop", "rate": 1.0 }]
+  },
+  {
+    "id": "smelter",
+    "name": "โรงถลุงรัฐวิสาหกิจ",
+    "size": [2, 2],
+    "color": "#b5651d",
+    "tier": "process",
+    "requires": "",
+    "cost": 400,
+    "inputs": [{ "resource": "ore", "rate": 2.0 }],
+    "outputs": [{ "resource": "metal", "rate": 1.0 }]
+  },
+  {
+    "id": "sawmill",
+    "name": "โรงเลื่อยสัมปทาน",
+    "size": [2, 1],
+    "color": "#a9744f",
+    "tier": "process",
+    "requires": "",
+    "cost": 350,
+    "inputs": [{ "resource": "log", "rate": 2.0 }],
+    "outputs": [{ "resource": "plank", "rate": 1.0 }]
+  },
+  {
+    "id": "food_plant",
+    "name": "โรงงานแปรรูปอาหาร",
+    "size": [2, 2],
+    "color": "#e08a5b",
+    "tier": "process",
+    "requires": "",
+    "cost": 500,
+    "inputs": [
+      { "resource": "fish", "rate": 1.0 },
+      { "resource": "crop", "rate": 1.0 }
+    ],
+    "outputs": [{ "resource": "food", "rate": 1.0 }]
+  },
+  {
+    "id": "assembly_plant",
+    "name": "โรงงานประกอบ",
+    "size": [2, 2],
+    "color": "#6e7b8b",
+    "tier": "manufacture",
+    "requires": "",
+    "cost": 1500,
+    "inputs": [
+      { "resource": "metal", "rate": 1.0 },
+      { "resource": "plank", "rate": 1.0 }
+    ],
+    "outputs": [{ "resource": "goods", "rate": 1.0 }]
+  },
+  {
+    "id": "food_stall",
+    "name": "แผงลอยริมทาง",
+    "size": [1, 1],
+    "color": "#d98a4b",
+    "tier": "retail",
+    "requires": "",
+    "cost": 150,
+    "inputs": [{ "resource": "food", "rate": 1.0 }],
+    "outputs": [{ "resource": "money", "rate": 5.0 }]
+  },
+  {
+    "id": "mega_mall",
+    "name": "เมกาห้างสรรพสินค้า",
+    "size": [2, 2],
+    "color": "#5bbf73",
+    "tier": "retail",
+    "requires": "",
+    "cost": 3000,
+    "inputs": [{ "resource": "goods", "rate": 1.0 }],
+    "outputs": [{ "resource": "money", "rate": 20.0 }]
+  },
+  {
+    "id": "permit_office",
+    "name": "สำนักงานตราประทับ",
+    "size": [2, 2],
+    "color": "#9aa0a6",
+    "tier": "infra",
+    "requires": "",
+    "cost": 800,
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "id": "promo_booth",
+    "name": "บูธโปรโมชัน",
+    "size": [1, 1],
+    "color": "#e0b341",
+    "tier": "pr",
+    "requires": "",
+    "cost": 250,
+    "inputs": [],
+    "outputs": [{ "resource": "trend", "rate": 0.1 }]
+  }
+]

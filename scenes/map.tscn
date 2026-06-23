@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/map.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/ui.gd" id="2"]
@@ -7,6 +7,10 @@
 [ext_resource type="Script" path="res://scripts/terrain.gd" id="5"]
 [ext_resource type="Script" path="res://scripts/cell_selector.gd" id="6"]
 [ext_resource type="Script" path="res://scripts/dialog.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/build_layer.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/sketch_button.gd" id="9"]
+[ext_resource type="Texture2D" path="res://assets/icons/back.svg" id="10"]
+[ext_resource type="Texture2D" path="res://assets/icons/close.svg" id="11"]
 
 [sub_resource type="Theme" id="Theme_ui"]
 Label/colors/font_color = Color(0.29, 0.259, 0.204, 1)
@@ -14,7 +18,7 @@ Button/colors/font_color = Color(0.29, 0.259, 0.204, 1)
 Button/colors/font_hover_color = Color(0.435, 0.392, 0.325, 1)
 Button/colors/font_pressed_color = Color(0.18, 0.16, 0.12, 1)
 
-[sub_resource type="ButtonGroup" id="BG_qty"]
+[sub_resource type="ButtonGroup" id="BG_size"]
 
 [node name="Map" type="Node2D"]
 script = ExtResource("1")
@@ -26,6 +30,9 @@ script = ExtResource("4")
 
 [node name="Terrain" type="Node2D" parent="."]
 script = ExtResource("5")
+
+[node name="BuildLayer" type="Node2D" parent="."]
+script = ExtResource("8")
 
 [node name="Selection" type="Node2D" parent="."]
 script = ExtResource("6")
@@ -118,6 +125,15 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_constants/separation = 12
 
+[node name="BackArrow" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/Header"]
+visible = false
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+flat = true
+self_modulate = Color(0.435, 0.392, 0.325, 1)
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("10")
+
 [node name="Icon" type="ColorRect" parent="UI/Root/BottomSheet/Margin/VBox/Header"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
@@ -141,49 +157,101 @@ text = "Level 0"
 custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
 flat = true
-text = "✕"
+self_modulate = Color(0.435, 0.392, 0.325, 1)
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("11")
 
-[node name="Income" type="Label" parent="UI/Root/BottomSheet/Margin/VBox"]
+[node name="InfoView" type="VBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Income" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/InfoView"]
 layout_mode = 2
 text = "Income now        12.5 /sec"
 
-[node name="After" type="Label" parent="UI/Root/BottomSheet/Margin/VBox"]
+[node name="After" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/InfoView"]
 layout_mode = 2
 text = "After upgrade     18.7 /sec"
 
-[node name="QtyRow" type="HBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox"]
+[node name="Build" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/InfoView"]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_constants/separation = 8
+text = "Build here"
+script = ExtResource("9")
+color = Color(0.357, 0.749, 0.451, 1)
 
-[node name="QtyX1" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/QtyRow"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_pressed = true
-button_group = SubResource("BG_qty")
-text = "x1"
-
-[node name="QtyX10" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/QtyRow"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("BG_qty")
-text = "x10"
-
-[node name="QtyXMax" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/QtyRow"]
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-toggle_mode = true
-button_group = SubResource("BG_qty")
-text = "xMAX"
-
-[node name="Upgrade" type="Button" parent="UI/Root/BottomSheet/Margin/VBox"]
+[node name="Upgrade" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/InfoView"]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "Upgrade x1        (cost 100)"
+
+[node name="BuildView" type="VBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Scroll" type="ScrollContainer" parent="UI/Root/BottomSheet/Margin/VBox/BuildView"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="UI/Root/BottomSheet/Margin/VBox/BuildView/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="DetailView" type="VBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="Row" type="HBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox/DetailView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DSwatch" type="ColorRect" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(1, 1, 1, 1)
+
+[node name="DInfo" type="VBoxContainer" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DChain" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row/DInfo"]
+layout_mode = 2
+text = "chain"
+
+[node name="DSize" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row/DInfo"]
+layout_mode = 2
+text = "size"
+
+[node name="DCost" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row/DInfo"]
+layout_mode = 2
+text = "cost"
+
+[node name="DNeeds" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/DetailView/Row/DInfo"]
+layout_mode = 2
+text = "needs"
+
+[node name="DStatus" type="Label" parent="UI/Root/BottomSheet/Margin/VBox/DetailView"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.541, 0.498, 0.42, 1)
+text = "Tap the map to position"
+
+[node name="Confirm" type="Button" parent="UI/Root/BottomSheet/Margin/VBox/DetailView"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Confirm"
+script = ExtResource("9")
+color = Color(0.357, 0.749, 0.451, 1)
 
 [node name="Dialog" type="CanvasLayer" parent="."]
 layer = 5
@@ -241,6 +309,44 @@ text = "✕"
 
 [node name="Body" type="Label" parent="Dialog/Panel/Margin/VBox"]
 layout_mode = 2
-size_flags_vertical = 3
 theme_override_colors/font_color = Color(0.541, 0.498, 0.42, 1)
-text = "Settings content goes here…"
+text = "Map size"
+
+[node name="SizeRow" type="HBoxContainer" parent="Dialog/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Size1" type="Button" parent="Dialog/Panel/Margin/VBox/SizeRow"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("BG_size")
+text = "50"
+
+[node name="Size2" type="Button" parent="Dialog/Panel/Margin/VBox/SizeRow"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("BG_size")
+text = "100"
+
+[node name="Size3" type="Button" parent="Dialog/Panel/Margin/VBox/SizeRow"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+toggle_mode = true
+button_group = SubResource("BG_size")
+text = "150"
+
+[node name="Spacer" type="Control" parent="Dialog/Panel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Recreate" type="Button" parent="Dialog/Panel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Recreate map"
+script = ExtResource("9")
+color = Color(0.878, 0.478, 0.373, 1)
